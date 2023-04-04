@@ -4,19 +4,26 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://127.0.0.1:3306/gram__dev?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
-    username: root
-    password:
+    username: lldj
+    password: ${MYSQL_PW}
   security:
     oauth2:
       client:
         registration:
           kakao:
-            clientId: 0e59d4068f2c83091f3c4511cb557c15
+            clientId: ${KAKAO_CL_ID}
             scope:
             client-name: Kakao
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             client-authentication-method: POST
+          google:
+            client-id: ${GOOGLE_CL_ID}
+            scope:
+              - profile
+              - email
+            client-secret: ${GOOGLE_CL_SC}
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
