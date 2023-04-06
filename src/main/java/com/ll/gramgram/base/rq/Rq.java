@@ -85,7 +85,7 @@ public class Rq {
         return redirectWithErrorMsg(url, rsData.getMsg());
     }
 
-    private String redirectWithErrorMsg(String url, String msg) {
+    public String redirectWithErrorMsg(String url, String msg) {
         return "redirect:" + urlWithErrorMsg(url, msg);
     }
 

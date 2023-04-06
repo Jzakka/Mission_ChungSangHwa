@@ -62,20 +62,17 @@ public class LikeablePersonController {
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
-        String redirectUrl = "/";
         RsData<LikeablePerson> pair = likeablePersonService.getPair(id);
 
-        if (pair.isSuccess()) {
-            if (isLikerOf(pair)) {
-                redirectUrl = "/likeablePerson/list";
-                likeablePersonService.deletePairByPairId(id);
-                return rq.redirectWithMsg(redirectUrl, pair);
-            }
-            pair.setResultCode("F-2");
-            pair.setMsg("삭제권한 없음");
+        if (pair.isFail()) {
+            return rq.redirectWithMsg("/", pair);
+        }
+        if (isLikerOf(pair)) {
+            likeablePersonService.deletePairByPairId(id);
+            return rq.redirectWithMsg("/likeablePerson/list", pair);
         }
 
-        return rq.redirectWithMsg(redirectUrl, pair);
+        return rq.redirectWithErrorMsg("/", "삭제권한 없음");
     }
 
     private boolean isLikerOf(RsData<LikeablePerson> pair) {
