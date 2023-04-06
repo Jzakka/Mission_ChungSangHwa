@@ -80,6 +80,6 @@ public class LikeablePersonController {
 
     private boolean isLikerOf(RsData<LikeablePerson> pair) {
         return rq.isLogin() && rq.getMember().hasConnectedInstaMember()
-                && pair.getData().getFromInstaMemberUsername().equals(rq.getMember().getInstaMember().getUsername());
+                && pair.getData().getFromInstaMember().getId().equals(rq.getMember().getInstaMember().getId());
     }
 }
