@@ -67,16 +67,11 @@ public class LikeablePersonController {
         if (pair.isFail()) {
             return rq.redirectWithMsg("/", pair);
         }
-        if (isLikerOf(pair)) {
+        if (pair.getData().isLikeeOf(rq)) {
             likeablePersonService.deletePairByPairId(id);
             return rq.redirectWithMsg("/likeablePerson/list", pair);
         }
 
         return rq.redirectWithErrorMsg("/", "삭제권한 없음");
-    }
-
-    private boolean isLikerOf(RsData<LikeablePerson> pair) {
-        return rq.isLogin() && rq.getMember().hasConnectedInstaMember()
-                && pair.getData().getFromInstaMember().getId().equals(rq.getMember().getInstaMember().getId());
     }
 }

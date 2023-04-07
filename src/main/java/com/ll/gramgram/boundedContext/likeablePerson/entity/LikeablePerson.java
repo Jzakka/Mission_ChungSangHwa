@@ -1,5 +1,6 @@
 package com.ll.gramgram.boundedContext.likeablePerson.entity;
 
+import com.ll.gramgram.base.rq.Rq;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,5 +42,10 @@ public class LikeablePerson {
             case 2 -> "성격";
             default -> "능력";
         };
+    }
+
+    public boolean isLikeeOf(Rq rq) {
+        return rq.isLogin() && rq.getMember().hasConnectedInstaMember()
+                && this.getFromInstaMember().getId().equals(rq.getMember().getInstaMember().getId());
     }
 }
