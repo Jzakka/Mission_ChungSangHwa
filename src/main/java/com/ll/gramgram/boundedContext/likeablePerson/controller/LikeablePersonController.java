@@ -60,7 +60,8 @@ public class LikeablePersonController {
         return "usr/likeablePerson/list";
     }
 
-    @GetMapping("/delete/{id}")
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
         RsData<LikeablePerson> likeeResult = likeablePersonService.getLikee(id);
 
