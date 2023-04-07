@@ -1,6 +1,7 @@
 package com.ll.gramgram.boundedContext.likeablePerson.controller;
 
 
+import com.ll.gramgram.base.rq.Rq;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -26,6 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LikeablePersonControllerTests {
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private Rq rq;
 
     @Test
     @DisplayName("등록 폼(인스타 인증을 안해서 폼 대신 메세지)")
@@ -148,5 +154,57 @@ public class LikeablePersonControllerTests {
                         <span class="toInstaMember_attractiveTypeDisplayName">성격</span>
                         """.stripIndent().trim())));
         ;
+    }
+
+    @Test
+    @WithUserDetails("user3")
+    void 삭제_성공() throws Exception {
+        ResultActions resultActions = mvc.perform(delete("/likeablePerson/1")
+                        .with(csrf())) // CSRF 키 생성
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name(containsString("msg=%s".formatted(URLEncoder.encode("성공", StandardCharsets.UTF_8)))));
+    }
+
+    @Test
+    void 삭제_실패_로그인_안함() throws Exception {
+        ResultActions resultActions = mvc.perform(delete("/likeablePerson/1")
+                        .with(csrf())) // CSRF 키 생성
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(redirectedUrlPattern("**/member/login"));
+    }
+
+    @Test
+    @WithUserDetails("user1")
+    void 삭제_실패_타인꺼() throws Exception {
+        ResultActions resultActions = mvc.perform(delete("/likeablePerson/1")
+                        .with(csrf())) // CSRF 키 생성
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(view().name(containsString("errorMsg=%s".formatted(URLEncoder.encode("삭제권한 없음", StandardCharsets.UTF_8)))));
+    }
+
+    @Test
+    @WithUserDetails("user3")
+    void 삭제_실패_없는거() throws Exception {
+        ResultActions resultActions = mvc.perform(delete("/likeablePerson/100")
+                        .with(csrf())) // CSRF 키 생성
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(view().name(containsString("errorMsg=%s".formatted(URLEncoder.encode("존재하지 않는 페어입니다.", StandardCharsets.UTF_8)))));
     }
 }
