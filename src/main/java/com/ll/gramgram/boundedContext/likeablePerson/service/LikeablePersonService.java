@@ -55,7 +55,7 @@ public class LikeablePersonService {
         likeablePersonRepository.deleteById((int)id);
     }
 
-    public RsData<LikeablePerson> getPair(long id) {
+    public RsData<LikeablePerson> getLikee(long id) {
         Optional<LikeablePerson> pair = likeablePersonRepository.findById((int) id);
         return pair.map(RsData::successOf).orElseGet(() -> RsData.of("F-1", "존재하지 않는 페어입니다."));
     }

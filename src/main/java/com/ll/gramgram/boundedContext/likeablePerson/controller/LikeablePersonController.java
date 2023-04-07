@@ -62,14 +62,14 @@ public class LikeablePersonController {
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
-        RsData<LikeablePerson> pair = likeablePersonService.getPair(id);
+        RsData<LikeablePerson> likeeResult = likeablePersonService.getLikee(id);
 
-        if (pair.isFail()) {
-            return rq.redirectWithMsg("/", pair);
+        if (likeeResult.isFail()) {
+            return rq.redirectWithMsg("/", likeeResult);
         }
-        if (pair.getData().isLikeeOf(rq)) {
+        if (likeeResult.getData().isLikeeOf(rq.getMember())) {
             likeablePersonService.deletePairByPairId(id);
-            return rq.redirectWithMsg("/likeablePerson/list", pair);
+            return rq.redirectWithMsg("/likeablePerson/list", likeeResult);
         }
 
         return rq.redirectWithErrorMsg("/", "삭제권한 없음");
