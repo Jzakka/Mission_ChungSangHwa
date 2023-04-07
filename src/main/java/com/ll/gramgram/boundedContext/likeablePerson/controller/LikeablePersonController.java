@@ -9,11 +9,10 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,6 +46,7 @@ public class LikeablePersonController {
         return rq.redirectWithMsg("/likeablePerson/list", createRsData);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showList(Model model) {
         InstaMember instaMember = rq.getMember().getInstaMember();
@@ -58,5 +58,21 @@ public class LikeablePersonController {
         }
 
         return "usr/likeablePerson/list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id) {
+        RsData<LikeablePerson> likeeResult = likeablePersonService.getLikee(id);
+
+        if (likeeResult.isFail()) {
+            return rq.redirectWithMsg("/", likeeResult);
+        }
+        LikeablePerson person = likeeResult.getData();
+        if (person.isLikeeOf(rq.getMember())) {
+            likeablePersonService.deletePairByPairId(id);
+            return rq.redirectWithMsg("/likeablePerson/list", likeeResult);
+        }
+
+        return rq.redirectWithErrorMsg("/", "삭제권한 없음");
     }
 }

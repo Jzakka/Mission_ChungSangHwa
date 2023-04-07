@@ -1,6 +1,7 @@
 package com.ll.gramgram.boundedContext.likeablePerson.entity;
 
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
+import com.ll.gramgram.boundedContext.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -41,5 +42,10 @@ public class LikeablePerson {
             case 2 -> "성격";
             default -> "능력";
         };
+    }
+
+    public boolean isLikeeOf(Member member) {
+        return member != null && member.hasConnectedInstaMember()
+                && this.getFromInstaMember().getId().equals(member.getInstaMember().getId());
     }
 }

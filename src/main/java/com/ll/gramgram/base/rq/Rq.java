@@ -79,7 +79,18 @@ public class Rq {
 
     // 302 + 메세지
     public String redirectWithMsg(String url, RsData rsData) {
-        return redirectWithMsg(url, rsData.getMsg());
+        if (rsData.isSuccess()) {
+            return redirectWithMsg(url, rsData.getMsg());
+        }
+        return redirectWithErrorMsg(url, rsData.getMsg());
+    }
+
+    public String redirectWithErrorMsg(String url, String msg) {
+        return "redirect:" + urlWithErrorMsg(url, msg);
+    }
+
+    private String urlWithErrorMsg(String url, String msg) {
+        return Ut.url.modifyQueryParam(url, "errorMsg", msgWithTtl(msg));
     }
 
     // 302 + 메세지
