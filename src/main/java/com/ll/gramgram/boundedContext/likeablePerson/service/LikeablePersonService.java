@@ -52,11 +52,11 @@ public class LikeablePersonService {
 
     @Transactional
     public void deletePairByPairId(long id) {
-        likeablePersonRepository.deleteById((int)id);
+        likeablePersonRepository.deleteById(id);
     }
 
     public RsData<LikeablePerson> getLikee(long id) {
-        Optional<LikeablePerson> pair = likeablePersonRepository.findById((int) id);
+        Optional<LikeablePerson> pair = likeablePersonRepository.findById( id);
         return pair.map(RsData::successOf).orElseGet(() -> RsData.of("F-1", "존재하지 않는 페어입니다."));
     }
 }

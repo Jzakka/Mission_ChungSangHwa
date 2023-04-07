@@ -67,7 +67,8 @@ public class LikeablePersonController {
         if (likeeResult.isFail()) {
             return rq.redirectWithMsg("/", likeeResult);
         }
-        if (likeeResult.getData().isLikeeOf(rq.getMember())) {
+        LikeablePerson person = likeeResult.getData();
+        if (person.isLikeeOf(rq.getMember())) {
             likeablePersonService.deletePairByPairId(id);
             return rq.redirectWithMsg("/likeablePerson/list", likeeResult);
         }
