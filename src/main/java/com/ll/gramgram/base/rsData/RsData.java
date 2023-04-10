@@ -1,9 +1,13 @@
 package com.ll.gramgram.base.rsData;
 
+import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
+import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -14,6 +18,13 @@ public class RsData<T> {
     private String resultCode;
     private String msg;
     private T data;
+    private Map<String, Object> attributes = new ConcurrentHashMap<>();
+
+    public RsData(String resultCode, String msg, T data) {
+        this.resultCode = resultCode;
+        this.msg = msg;
+        this.data = data;
+    }
 
     public static <T> RsData<T> of(String resultCode, String msg, T data) {
         return new RsData<>(resultCode, msg, data);
@@ -31,8 +42,16 @@ public class RsData<T> {
         return of("F-1", "실패", data);
     }
 
-    public static <T> RsData<T> doingOf() {
+    public static <T> RsData<T> keepGoing() {
         return of("P", "In processing");
+    }
+
+    public Object getAttribute(String attributeName) {
+        return attributes.get(attributeName);
+    }
+
+    public void setAttribute(String attributeName, Object attribute) {
+        attributes.put(attributeName, attribute);
     }
 
     public boolean isSuccess() {
@@ -43,12 +62,11 @@ public class RsData<T> {
         return isSuccess() == false;
     }
 
-    public RsData then(Function<RsData, RsData> constrain) {
+    public RsData then(Function<RsData<T>, RsData> constrain) {
         if (this.getResultCode().equals("P")) {
             return constrain.apply(this);
         }
         return this;
-
     }
 
     public static <T> RsData<T> produce(Supplier<RsData> callback) {
