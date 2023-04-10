@@ -40,10 +40,6 @@ public class RsData<T> {
         return of("F-1", "실패", data);
     }
 
-    public static <T> RsData<T> keepGoing() {
-        return of("P", "In processing");
-    }
-
     public Object getAttribute(String attributeName) {
         return attributes.get(attributeName);
     }

@@ -2,7 +2,6 @@ package com.ll.gramgram.boundedContext.likeablePerson.service;
 
 import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
-import com.ll.gramgram.boundedContext.instaMember.service.InstaMemberService;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.likeablePerson.validator.LikeablePersonValidator;
@@ -19,14 +18,14 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class LikeablePersonService {
     private final LikeablePersonRepository likeablePersonRepository;
-    private final LikeablePersonValidator likeablePersonValidator;
+    private final LikeablePersonValidator validator;
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
         return RsData
-                .produce(() -> likeablePersonValidator.checkOwnInstagramId(member))
-                .then(rsData -> likeablePersonValidator.checkSelfLike(member, username, rsData))
-                .then(rsData -> likeablePersonValidator.checkAlreadyLike(member, username, attractiveTypeCode, (RsData) rsData))
-                .then(rsData -> likeablePersonValidator.checkMaximumLike(member, (RsData) rsData))
+                .produce(() -> validator.checkOwnInstagramId(member))
+                .then(rsData -> validator.checkSelfLike(member, username, rsData))
+                .then(rsData -> validator.checkAlreadyLike(member, username, attractiveTypeCode, (RsData) rsData))
+                .then(rsData -> validator.checkMaximumLike(member, (RsData) rsData))
                 .then(rsData -> successfulLike(member, username, attractiveTypeCode, (RsData) rsData));
     }
 
