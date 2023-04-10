@@ -1,7 +1,5 @@
 package com.ll.gramgram.base.rsData;
 
-import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
-import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,14 +60,14 @@ public class RsData<T> {
         return isSuccess() == false;
     }
 
-    public RsData then(Function<RsData<T>, RsData> constrain) {
+    public RsData then(Function<RsData, RsData> constrain) {
         if (this.getResultCode().equals("P")) {
             return constrain.apply(this);
         }
         return this;
     }
 
-    public static <T> RsData<T> produce(Supplier<RsData> callback) {
+    public static <T> RsData<T> produce(Supplier<RsData<T>> callback) {
         return callback.get();
     }
 }
