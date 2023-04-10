@@ -48,11 +48,15 @@ class LikeablePersonServiceTest {
     }
 
     @Test
-    void 호감표시_실패_없는_사람() {
+    void 호감표시_실패_한도초과() {
         Member member2 = memberRepository.findByUsername("user2").get();
-        RsData<LikeablePerson> result = likeablePersonService.like(member2, "PSEUDO_USER", 0);
+        for (int i = 0; i < 10; i++) {
+            likeablePersonService.like(member2, "dummy_insta_mem_%s".formatted(i), 0);
+        }
+
+        RsData<LikeablePerson> result = likeablePersonService.like(member2, "exceed_likeable_person", 1);
 
         assertThat(result.isFail()).isTrue();
-        assertThat(result.getMsg()).isEqualTo("사용자 인스타정보가 없습니다.");
+        assertThat(result.getMsg()).isEqualTo("호감상대는 최대 10명까지 등록 가능합니다.");
     }
 }

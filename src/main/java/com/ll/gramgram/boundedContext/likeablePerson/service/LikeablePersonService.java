@@ -31,12 +31,10 @@ public class LikeablePersonService {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
         }
 
-        Optional<InstaMember> toInstMemberOptional = instaMemberService.findByUsername(username);
-        if (toInstMemberOptional.isEmpty()) {
-            return RsData.of("F-4", "사용자 인스타정보가 없습니다.");
-        }
+        InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
+
         Optional<LikeablePerson> likeInfoOptional = likeablePersonRepository
-                .findByFromInstaMemberIdAndToInstaMemberId(member.getInstaMember().getId(), toInstMemberOptional.get().getId());
+                .findByFromInstaMemberIdAndToInstaMemberId(member.getInstaMember().getId(), toInstaMember.getId());
 
         if(likeInfoOptional.isPresent()){
             LikeablePerson likeablePerson = likeInfoOptional.get();
@@ -48,7 +46,10 @@ public class LikeablePersonService {
             return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
         }
 
-        InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
+        List<LikeablePerson> likeList = likeablePersonRepository.findByFromInstaMemberId(member.getInstaMember().getId());
+        if (likeList.size() == 10) {
+            return RsData.of("F-4", "호감상대는 최대 10명까지 등록 가능합니다.");
+        }
 
         LikeablePerson likeablePerson = LikeablePerson
                 .builder()
