@@ -48,4 +48,8 @@ public class LikeablePerson {
         return member.hasConnectedInstaMember()
                 && this.getFromInstaMember().getId().equals(member.getInstaMember().getId());
     }
+
+    public void changeAttractiveType(int attractiveTypeCode) {
+        this.attractiveTypeCode = attractiveTypeCode;
+    }
 }

@@ -7,6 +7,7 @@ import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,23 @@ public class LikeablePersonService {
 
         if (member.getInstaMember().getUsername().equals(username)) {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
+        }
+
+        Optional<InstaMember> toInstMemberOptional = instaMemberService.findByUsername(username);
+        if (toInstMemberOptional.isEmpty()) {
+            return RsData.of("F-4", "사용자 인스타정보가 없습니다.");
+        }
+        Optional<LikeablePerson> likeInfoOptional = likeablePersonRepository
+                .findByFromInstaMemberIdAndToInstaMemberId(member.getInstaMember().getId(), toInstMemberOptional.get().getId());
+
+        if(likeInfoOptional.isPresent()){
+            LikeablePerson likeablePerson = likeInfoOptional.get();
+            if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
+                return RsData.of("F-3", "이미 호감표시하였습니다.");
+            }
+            likeablePerson.changeAttractiveType(attractiveTypeCode);
+            likeablePersonRepository.save(likeablePerson);
+            return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
         }
 
         InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
