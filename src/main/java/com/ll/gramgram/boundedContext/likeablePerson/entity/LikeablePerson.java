@@ -45,7 +45,7 @@ public class LikeablePerson {
     }
 
     public boolean isLikeeOf(Member member) {
-        return member != null && member.hasConnectedInstaMember()
+        return member.hasConnectedInstaMember()
                 && this.getFromInstaMember().getId().equals(member.getInstaMember().getId());
     }
 }
