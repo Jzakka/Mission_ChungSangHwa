@@ -23,20 +23,35 @@ public class LikeablePersonService {
 
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
-        if ( member.hasConnectedInstaMember() == false ) {
+        InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
+
+        return RsData
+                .produce(() -> hasMemberInstagramId(member))
+                .then(rsData -> isSelfRegister(member, username))
+                .then(rsData -> isPreRegistered(member, attractiveTypeCode, toInstaMember))
+                .then(rsData -> exceededMaximumRegister(member))
+                .then(rsData -> succeessfulRegister(member, username, attractiveTypeCode, toInstaMember));
+    }
+
+    private RsData<LikeablePerson> hasMemberInstagramId(Member member) {
+        if (member.hasConnectedInstaMember() == false) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
         }
+        return RsData.doingOf();
+    }
 
+    private RsData<LikeablePerson> isSelfRegister(Member member, String username) {
         if (member.getInstaMember().getUsername().equals(username)) {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
         }
+        return RsData.doingOf();
+    }
 
-        InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
-
+    private RsData<LikeablePerson> isPreRegistered(Member member, int attractiveTypeCode, InstaMember toInstaMember) {
         Optional<LikeablePerson> likeInfoOptional = likeablePersonRepository
                 .findByFromInstaMemberIdAndToInstaMemberId(member.getInstaMember().getId(), toInstaMember.getId());
 
-        if(likeInfoOptional.isPresent()){
+        if (likeInfoOptional.isPresent()) {
             LikeablePerson likeablePerson = likeInfoOptional.get();
             if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
                 return RsData.of("F-3", "이미 호감표시하였습니다.");
@@ -46,11 +61,19 @@ public class LikeablePersonService {
             return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
         }
 
+        return RsData.doingOf();
+    }
+
+    private RsData<LikeablePerson> exceededMaximumRegister(Member member) {
         List<LikeablePerson> likeList = likeablePersonRepository.findByFromInstaMemberId(member.getInstaMember().getId());
         if (likeList.size() == 10) {
             return RsData.of("F-4", "호감상대는 최대 10명까지 등록 가능합니다.");
         }
 
+        return RsData.doingOf();
+    }
+
+    private RsData<LikeablePerson> succeessfulRegister(Member member, String username, int attractiveTypeCode, InstaMember toInstaMember) {
         LikeablePerson likeablePerson = LikeablePerson
                 .builder()
                 .fromInstaMember(member.getInstaMember()) // 호감을 표시하는 사람의 인스타 멤버

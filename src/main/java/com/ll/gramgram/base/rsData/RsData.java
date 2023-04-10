@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -28,11 +31,27 @@ public class RsData<T> {
         return of("F-1", "실패", data);
     }
 
+    public static <T> RsData<T> doingOf() {
+        return of("P", "In processing");
+    }
+
     public boolean isSuccess() {
         return resultCode.startsWith("S-");
     }
 
     public boolean isFail() {
         return isSuccess() == false;
+    }
+
+    public RsData then(Function<RsData, RsData> constrain) {
+        if (this.getResultCode().equals("P")) {
+            return constrain.apply(this);
+        }
+        return this;
+
+    }
+
+    public static <T> RsData<T> produce(Supplier<RsData> callback) {
+        return callback.get();
     }
 }
