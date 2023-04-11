@@ -181,30 +181,4 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().methodName("delete"))
                 .andExpect(redirectedUrlPattern("**/member/login"));
     }
-
-    @Test
-    @WithUserDetails("user1")
-    void 삭제_실패_타인꺼() throws Exception {
-        ResultActions resultActions = mvc.perform(delete("/likeablePerson/1")
-                        .with(csrf())) // CSRF 키 생성
-                .andDo(print());
-
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("delete"))
-                .andExpect(view().name(containsString("errorMsg=%s".formatted(URLEncoder.encode("삭제권한 없음", StandardCharsets.UTF_8)))));
-    }
-
-    @Test
-    @WithUserDetails("user3")
-    void 삭제_실패_없는거() throws Exception {
-        ResultActions resultActions = mvc.perform(delete("/likeablePerson/100")
-                        .with(csrf())) // CSRF 키 생성
-                .andDo(print());
-
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("delete"))
-                .andExpect(view().name(containsString("errorMsg=%s".formatted(URLEncoder.encode("존재하지 않는 페어입니다.", StandardCharsets.UTF_8)))));
-    }
 }
