@@ -66,7 +66,7 @@ public class LikeablePersonController {
         RsData<LikeablePerson> likeeResult = likeablePersonService.getLikee(id);
 
         if (likeeResult.isFail()) {
-            return rq.redirectWithMsg("/", likeeResult);
+            return rq.historyBack(likeeResult);
         }
         LikeablePerson person = likeeResult.getData();
         if (person.isLikeeOf(rq.getMember())) {
@@ -74,6 +74,6 @@ public class LikeablePersonController {
             return rq.redirectWithMsg("/likeablePerson/list", likeeResult);
         }
 
-        return rq.redirectWithErrorMsg("/", "삭제권한 없음");
+        return rq.historyBack("삭제권한 없음");
     }
 }
