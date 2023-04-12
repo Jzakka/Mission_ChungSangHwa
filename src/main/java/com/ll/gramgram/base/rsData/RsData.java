@@ -63,7 +63,7 @@ public class RsData<T> {
         return this;
     }
 
-    public static <T> RsData<T> produce(Supplier<RsData<T>> callback) {
-        return callback.get();
+    public static <T> RsData<T> produce() {
+        return RsData.of("P", "Not Completed");
     }
 }

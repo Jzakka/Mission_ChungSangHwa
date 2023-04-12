@@ -18,11 +18,11 @@ public class LikeablePersonValidator {
     private final LikeablePersonRepository likeablePersonRepository;
     private final InstaMemberService instaMemberService;
 
-    public RsData<LikeablePerson> checkOwnInstagramId(Member member) {
+    public RsData<LikeablePerson> checkOwnInstagramId(Member member, RsData rsData) {
         if (member.hasConnectedInstaMember() == false) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
         }
-        return RsData.of("P", "Not Completed");
+        return rsData;
     }
 
     public RsData<LikeablePerson> checkSelfLike(Member member, String username, RsData rsData) {
