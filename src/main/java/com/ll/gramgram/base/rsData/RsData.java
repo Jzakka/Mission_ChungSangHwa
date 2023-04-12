@@ -56,14 +56,14 @@ public class RsData<T> {
         return isSuccess() == false;
     }
 
-    public RsData then(Function<RsData, RsData> constrain) {
+    public  RsData<T> then(Function<RsData<T>, RsData<T>> constrain) {
         if (this.getResultCode().equals("P")) {
             return constrain.apply(this);
         }
         return this;
     }
 
-    public static <T> RsData<T> produce() {
+    public static <T> RsData<T> produce(Class<T> entity) {
         return RsData.of("P", "Not Completed");
     }
 }

@@ -21,12 +21,12 @@ public class LikeablePersonService {
     private final LikeablePersonValidator validator;
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
-        return RsData.produce()
+        return RsData.produce(LikeablePerson.class)
                 .then(rsData -> validator.checkOwnInstagramId(member, rsData))
-                .then(rsData -> validator.checkSelfLike(member, username,(RsData) rsData))
-                .then(rsData -> validator.checkAlreadyLike(member, username, attractiveTypeCode, (RsData) rsData))
-                .then(rsData -> validator.checkMaximumLike(member, (RsData) rsData))
-                .then(rsData -> successfulLike(member, username, attractiveTypeCode, (RsData) rsData));
+                .then(rsData -> validator.checkSelfLike(member, username, rsData))
+                .then(rsData -> validator.checkAlreadyLike(member, username, attractiveTypeCode, rsData))
+                .then(rsData -> validator.checkMaximumLike(member, rsData))
+                .then(rsData -> successfulLike(member, username, attractiveTypeCode, rsData));
     }
 
     private RsData<LikeablePerson> successfulLike(Member member, String username, int attractiveTypeCode, RsData rsData) {

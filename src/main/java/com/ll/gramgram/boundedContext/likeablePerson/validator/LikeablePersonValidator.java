@@ -18,21 +18,22 @@ public class LikeablePersonValidator {
     private final LikeablePersonRepository likeablePersonRepository;
     private final InstaMemberService instaMemberService;
 
-    public RsData<LikeablePerson> checkOwnInstagramId(Member member, RsData rsData) {
+    public RsData<LikeablePerson> checkOwnInstagramId(Member member, RsData<LikeablePerson> rsData) {
         if (member.hasConnectedInstaMember() == false) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
         }
         return rsData;
     }
 
-    public RsData<LikeablePerson> checkSelfLike(Member member, String username, RsData rsData) {
+    public RsData<LikeablePerson> checkSelfLike(Member member, String username, RsData<LikeablePerson> rsData) {
         if (member.getInstaMember().getUsername().equals(username)) {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
         }
         return rsData;
     }
 
-    public RsData<LikeablePerson> checkAlreadyLike(Member member, String username, int attractiveTypeCode, RsData rsData) {
+    public RsData<LikeablePerson> checkAlreadyLike(Member member, String username,
+                                                   int attractiveTypeCode, RsData<LikeablePerson> rsData) {
         InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
         Optional<LikeablePerson> likeInfoOptional = likeablePersonRepository
                 .findByFromInstaMemberIdAndToInstaMemberId(member.getInstaMember().getId(), toInstaMember.getId());
@@ -55,7 +56,7 @@ public class LikeablePersonValidator {
         return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
     }
 
-    public RsData<LikeablePerson> checkMaximumLike(Member member, RsData rsData) {
+    public RsData<LikeablePerson> checkMaximumLike(Member member, RsData<LikeablePerson> rsData) {
         List<LikeablePerson> likeList = likeablePersonRepository.findByFromInstaMemberId(member.getInstaMember().getId());
         if (likeList.size() == 10) {
             return RsData.of("F-4", "호감상대는 최대 10명까지 등록 가능합니다.");
