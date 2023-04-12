@@ -50,7 +50,6 @@ likeablePerson에서 좋아하는 사람, 당한 사람을 기준으로 존재�
 
 - DB 자체에서도 앞의 제한 조건을 걸 수는 없는지
   - 컬럼 여러개(`fromInstaMemberId`와 `toInstaMemberId`)를 하나의 unique로 보기
-- like() 메서드에서 rsData를 익명함수의 인자로 넘길 때 왜 타입캐스팅을 해야하는 지 모르겠음
 - 지네릭스에 대한 이해도가 부족해서 이 부분을 더 깔끔한 코드로 바꾸기가 쉽지 않음
 - Validator 클래스를 따로 만들긴 했는데 이게 일반적인지는 잘 모르겠음
 - 카카오, 구글, 네이버 등 서비스에 따라서 CustomOAuth2UserService를 만들어서 provider에 따라 적절한 구현체를 주입하고 싶다
