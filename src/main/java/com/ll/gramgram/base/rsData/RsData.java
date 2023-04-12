@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 @Setter
 @AllArgsConstructor
 public class RsData<T> {
+    private static final String PROCESSING = "P";
     private String resultCode;
     private String msg;
     private T data;
@@ -56,14 +57,14 @@ public class RsData<T> {
         return isSuccess() == false;
     }
 
-    public  RsData<T> then(Function<RsData<T>, RsData<T>> constrain) {
-        if (this.getResultCode().equals("P")) {
+    public RsData<T> then(Function<RsData<T>, RsData<T>> constrain) {
+        if (this.getResultCode().equals(PROCESSING)) {
             return constrain.apply(this);
         }
         return this;
     }
 
     public static <T> RsData<T> produce(Class<T> entity) {
-        return RsData.of("P", "Not Completed");
+        return RsData.of(PROCESSING, "Not Completed");
     }
 }

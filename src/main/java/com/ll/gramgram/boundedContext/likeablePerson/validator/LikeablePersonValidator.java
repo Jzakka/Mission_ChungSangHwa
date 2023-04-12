@@ -7,6 +7,7 @@ import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,6 +18,9 @@ import java.util.Optional;
 public class LikeablePersonValidator {
     private final LikeablePersonRepository likeablePersonRepository;
     private final InstaMemberService instaMemberService;
+
+    @Value("${constant.max-likeable-person}")
+    private Integer maxLikeablePerson;
 
     public RsData<LikeablePerson> checkOwnInstagramId(Member member, RsData<LikeablePerson> rsData) {
         if (member.hasConnectedInstaMember() == false) {
@@ -58,8 +62,8 @@ public class LikeablePersonValidator {
 
     public RsData<LikeablePerson> checkMaximumLike(Member member, RsData<LikeablePerson> rsData) {
         List<LikeablePerson> likeList = likeablePersonRepository.findByFromInstaMemberId(member.getInstaMember().getId());
-        if (likeList.size() == 10) {
-            return RsData.of("F-4", "호감상대는 최대 10명까지 등록 가능합니다.");
+        if (likeList.size() == maxLikeablePerson) {
+            return RsData.of("F-4", "호감상대는 최대 %d명까지 등록 가능합니다.".formatted(maxLikeablePerson));
         }
         return rsData;
     }
