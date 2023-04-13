@@ -55,7 +55,6 @@ public class LikeablePersonValidator {
         if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
             return RsData.of("F-3", "이미 호감표시하였습니다.");
         }
-//        likeablePerson.changeAttractiveType(attractiveTypeCode);
         likeablePersonRepository.updateAttractiveTypeCode(likeablePerson.getId(), attractiveTypeCode);
         return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
     }
