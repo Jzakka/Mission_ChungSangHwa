@@ -54,7 +54,7 @@ public class RsData<T> {
     }
 
     public boolean isFail() {
-        return isSuccess() == false;
+        return resultCode.startsWith("F-");
     }
 
     public RsData<T> then(Function<RsData<T>, RsData<T>> constrain) {
