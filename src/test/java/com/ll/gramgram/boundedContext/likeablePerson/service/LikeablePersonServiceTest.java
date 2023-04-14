@@ -6,6 +6,7 @@ import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.boundedContext.member.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.*;
@@ -17,6 +18,9 @@ class LikeablePersonServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Value("${constant.max-likeable-person}")
+    private Integer maxLikeablePerson;
 
     @Test
     void 호감표시_성공() {
@@ -57,6 +61,6 @@ class LikeablePersonServiceTest {
         RsData<LikeablePerson> result = likeablePersonService.like(member2, "exceed_likeable_person", 1);
 
         assertThat(result.isFail()).isTrue();
-        assertThat(result.getMsg()).isEqualTo("호감상대는 최대 10명까지 등록 가능합니다.");
+        assertThat(result.getMsg()).isEqualTo("호감상대는 최대 %d명까지 등록 가능합니다.".formatted(maxLikeablePerson));
     }
 }
