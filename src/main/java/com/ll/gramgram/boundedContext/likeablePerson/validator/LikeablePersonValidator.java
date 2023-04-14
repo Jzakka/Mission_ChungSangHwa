@@ -44,19 +44,20 @@ public class LikeablePersonValidator {
 
         if (likeInfoOptional.isPresent()) {
             LikeablePerson likeablePerson = likeInfoOptional.get();
-            return changeReasonOrNot(attractiveTypeCode, likeablePerson);
+            return changeReasonOrNot(attractiveTypeCode, likeablePerson, rsData);
         }
 
         rsData.setAttribute("toInstaMember", toInstaMember);
         return rsData;
     }
 
-    public RsData<LikeablePerson> changeReasonOrNot(int attractiveTypeCode, LikeablePerson likeablePerson) {
+    public RsData<LikeablePerson> changeReasonOrNot(int attractiveTypeCode, LikeablePerson likeablePerson, RsData<LikeablePerson> rsData) {
         if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
             return RsData.of("F-3", "이미 호감표시하였습니다.");
         }
-        likeablePersonRepository.updateAttractiveTypeCode(likeablePerson.getId(), attractiveTypeCode);
-        return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
+        rsData.setAttribute("likeablePerson", likeablePerson);
+        rsData.setResultCode(RsData.EXCEPTION);
+        return rsData;
     }
 
     public RsData<LikeablePerson> checkMaximumLike(Member member, RsData<LikeablePerson> rsData) {

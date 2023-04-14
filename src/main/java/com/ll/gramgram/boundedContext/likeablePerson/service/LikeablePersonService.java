@@ -26,10 +26,20 @@ public class LikeablePersonService {
                 .then(rsData -> validator.checkSelfLike(member, username, rsData))
                 .then(rsData -> validator.checkAlreadyLike(member, username, attractiveTypeCode, rsData))
                 .then(rsData -> validator.checkMaximumLike(member, rsData))
-                .then(rsData -> successfulLike(member, username, attractiveTypeCode, rsData));
+                .then(rsData -> successfulLike(member, username, attractiveTypeCode, rsData))
+                .catchEx(rsData -> changeReason(attractiveTypeCode, rsData));
     }
 
-    private RsData<LikeablePerson> successfulLike(Member member, String username, int attractiveTypeCode, RsData rsData) {
+    private RsData<LikeablePerson> changeReason(int attractiveTypeCode, RsData<LikeablePerson> rsData) {
+        LikeablePerson likeablePerson = (LikeablePerson) rsData.getAttribute("likeablePerson");
+
+        likeablePersonRepository.updateAttractiveTypeCode(likeablePerson.getId(), attractiveTypeCode);
+
+        return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
+    }
+
+    private RsData<LikeablePerson> successfulLike(Member member, String username,
+                                                  int attractiveTypeCode, RsData<LikeablePerson> rsData) {
         InstaMember toInstaMember = (InstaMember) rsData.getAttribute("toInstaMember");
 
         LikeablePerson likeablePerson = LikeablePerson

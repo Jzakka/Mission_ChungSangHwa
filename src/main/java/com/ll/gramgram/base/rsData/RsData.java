@@ -7,13 +7,13 @@ import lombok.Setter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @Getter
 @Setter
 @AllArgsConstructor
 public class RsData<T> {
     private static final String PROCESSING = "P";
+    public static final String EXCEPTION = "E";
     private String resultCode;
     private String msg;
     private T data;
@@ -60,6 +60,13 @@ public class RsData<T> {
     public RsData<T> then(Function<RsData<T>, RsData<T>> constrain) {
         if (this.getResultCode().equals(PROCESSING)) {
             return constrain.apply(this);
+        }
+        return this;
+    }
+
+    public RsData<T> catchEx(Function<RsData<T>, RsData<T>> handler) {
+        if (this.getResultCode().equals(EXCEPTION)) {
+            return handler.apply(this);
         }
         return this;
     }
