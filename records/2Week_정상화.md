@@ -43,6 +43,7 @@ likeablePerson에서 좋아하는 사람, 당한 사람을 기준으로 존재�
 - likeablePerson을 추가하는 과정에 너무 많은 검증 절차가 요구됨
 - 검증로직을 validator에게 위임
 - RsData에 체인호출 스타일의 메서드를 만들어서 이 메서드로 검증을 진행
+- https://www.notion.so/LikeableService-585bf2c751084b1fa2595ab048d3e624
 
 **[특이사항]**
 
