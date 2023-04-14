@@ -54,7 +54,7 @@ class LikeablePersonServiceTest {
     @Test
     void 호감표시_실패_한도초과() {
         Member member2 = memberRepository.findByUsername("user2").get();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < maxLikeablePerson; i++) {
             likeablePersonService.like(member2, "dummy_insta_mem_%s".formatted(i), 0);
         }
 
