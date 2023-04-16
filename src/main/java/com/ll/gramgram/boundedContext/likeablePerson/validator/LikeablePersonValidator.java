@@ -44,14 +44,14 @@ public class LikeablePersonValidator {
 
         if (likeInfoOptional.isPresent()) {
             LikeablePerson likeablePerson = likeInfoOptional.get();
-            return changeReasonOrNot(attractiveTypeCode, likeablePerson, rsData);
+            return checkSameReason(attractiveTypeCode, likeablePerson, rsData);
         }
 
         rsData.setAttribute("toInstaMember", toInstaMember);
         return rsData;
     }
 
-    public RsData<LikeablePerson> changeReasonOrNot(int attractiveTypeCode, LikeablePerson likeablePerson, RsData<LikeablePerson> rsData) {
+    public RsData<LikeablePerson> checkSameReason(int attractiveTypeCode, LikeablePerson likeablePerson, RsData<LikeablePerson> rsData) {
         if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
             return RsData.of("F-3", "이미 호감표시하였습니다.");
         }
