@@ -2,9 +2,9 @@ package com.ll.gramgram.boundedContext.likeablePerson.service;
 
 import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
-import com.ll.gramgram.boundedContext.instaMember.service.InstaMemberService;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
+import com.ll.gramgram.boundedContext.likeablePerson.validator.LikeablePersonValidator;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,19 +18,29 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class LikeablePersonService {
     private final LikeablePersonRepository likeablePersonRepository;
-    private final InstaMemberService instaMemberService;
-
+    private final LikeablePersonValidator validator;
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
-        if ( member.hasConnectedInstaMember() == false ) {
-            return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
-        }
+        return RsData.produce(LikeablePerson.class)
+                .then(rsData -> validator.checkOwnInstagramId(member, rsData))
+                .then(rsData -> validator.checkSelfLike(member, username, rsData))
+                .then(rsData -> validator.checkAlreadyLike(member, username, attractiveTypeCode, rsData))
+                .then(rsData -> validator.checkMaximumLike(member, rsData))
+                .then(rsData -> successfulLike(member, username, attractiveTypeCode, rsData))
+                .catchEx(rsData -> changeReason(attractiveTypeCode, rsData));
+    }
 
-        if (member.getInstaMember().getUsername().equals(username)) {
-            return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
-        }
+    private RsData<LikeablePerson> changeReason(int attractiveTypeCode, RsData<LikeablePerson> rsData) {
+        LikeablePerson likeablePerson = (LikeablePerson) rsData.getAttribute("likeablePerson");
 
-        InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
+        likeablePersonRepository.updateAttractiveTypeCode(likeablePerson.getId(), attractiveTypeCode);
+
+        return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
+    }
+
+    private RsData<LikeablePerson> successfulLike(Member member, String username,
+                                                  int attractiveTypeCode, RsData<LikeablePerson> rsData) {
+        InstaMember toInstaMember = (InstaMember) rsData.getAttribute("toInstaMember");
 
         LikeablePerson likeablePerson = LikeablePerson
                 .builder()
@@ -56,7 +66,7 @@ public class LikeablePersonService {
     }
 
     public RsData<LikeablePerson> getLikee(long id) {
-        Optional<LikeablePerson> pair = likeablePersonRepository.findById( id);
+        Optional<LikeablePerson> pair = likeablePersonRepository.findById(id);
         return pair.map(RsData::successOf).orElseGet(() -> RsData.of("F-1", "존재하지 않는 페어입니다."));
     }
 }

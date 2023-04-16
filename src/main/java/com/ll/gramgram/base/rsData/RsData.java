@@ -4,13 +4,26 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+
 @Getter
 @Setter
 @AllArgsConstructor
 public class RsData<T> {
+    private static final String PROCESSING = "P";
+    public static final String EXCEPTION = "E";
     private String resultCode;
     private String msg;
     private T data;
+    private Map<String, Object> attributes = new ConcurrentHashMap<>();
+
+    public RsData(String resultCode, String msg, T data) {
+        this.resultCode = resultCode;
+        this.msg = msg;
+        this.data = data;
+    }
 
     public static <T> RsData<T> of(String resultCode, String msg, T data) {
         return new RsData<>(resultCode, msg, data);
@@ -28,11 +41,37 @@ public class RsData<T> {
         return of("F-1", "실패", data);
     }
 
+    public Object getAttribute(String attributeName) {
+        return attributes.get(attributeName);
+    }
+
+    public void setAttribute(String attributeName, Object attribute) {
+        attributes.put(attributeName, attribute);
+    }
+
     public boolean isSuccess() {
         return resultCode.startsWith("S-");
     }
 
     public boolean isFail() {
-        return isSuccess() == false;
+        return resultCode.startsWith("F-");
+    }
+
+    public RsData<T> then(Function<RsData<T>, RsData<T>> constrain) {
+        if (this.getResultCode().equals(PROCESSING)) {
+            return constrain.apply(this);
+        }
+        return this;
+    }
+
+    public RsData<T> catchEx(Function<RsData<T>, RsData<T>> handler) {
+        if (this.getResultCode().equals(EXCEPTION)) {
+            return handler.apply(this);
+        }
+        return this;
+    }
+
+    public static <T> RsData<T> produce(Class<T> entity) {
+        return RsData.of(PROCESSING, "Not Completed");
     }
 }
