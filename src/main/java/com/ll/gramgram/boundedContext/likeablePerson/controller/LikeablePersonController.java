@@ -78,7 +78,7 @@ public class LikeablePersonController {
         }
         LikeablePerson person = likeeResult.getData();
         if (person.isLikeeOf(rq.getMember())) {
-            likeablePersonService.delete(person);
+            likeablePersonService.cancel(person);
             return rq.redirectWithMsg("/usr/likeablePerson/list", likeeResult);
         }
 

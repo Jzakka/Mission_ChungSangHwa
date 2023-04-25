@@ -1,5 +1,8 @@
 package com.ll.gramgram.boundedContext.likeablePerson.service;
 
+import com.ll.gramgram.base.event.EventAfterLike;
+import com.ll.gramgram.base.event.EventAfterModifyAttractiveType;
+import com.ll.gramgram.base.event.EventBeforeCancelLike;
 import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
@@ -7,6 +10,7 @@ import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRe
 import com.ll.gramgram.boundedContext.likeablePerson.validator.LikeablePersonValidator;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +23,8 @@ import java.util.Optional;
 public class LikeablePersonService {
     private final LikeablePersonRepository likeablePersonRepository;
     private final LikeablePersonValidator validator;
+
+    private final ApplicationEventPublisher publisher;
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
         return RsData.produce(LikeablePerson.class)
@@ -34,8 +40,11 @@ public class LikeablePersonService {
     private RsData<LikeablePerson> changeReason(int attractiveTypeCode, RsData<LikeablePerson> rsData) {
         LikeablePerson likeablePerson = (LikeablePerson) rsData.getAttribute("likeablePerson");
 
+        Integer oldAttractiveTypeCode = likeablePerson.getAttractiveTypeCode();
         likeablePerson.setAttractiveTypeCode(attractiveTypeCode);
         likeablePersonRepository.save(likeablePerson);
+
+        publisher.publishEvent(new EventAfterModifyAttractiveType(this, likeablePerson, oldAttractiveTypeCode));
 
         return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
     }
@@ -59,6 +68,8 @@ public class LikeablePersonService {
         fromInstaMember.addFromLikeablePerson(likeablePerson);
         toInstaMember.addToLikeablePerson(likeablePerson);
 
+        publisher.publishEvent(new EventAfterLike(this, likeablePerson));
+
         return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeablePerson);
     }
 
@@ -67,7 +78,9 @@ public class LikeablePersonService {
     }
 
     @Transactional
-    public RsData delete(LikeablePerson likeablePerson) {
+    public RsData cancel(LikeablePerson likeablePerson) {
+        publisher.publishEvent(new EventBeforeCancelLike(this, likeablePerson));
+
         likeablePerson.getFromInstaMember().removeFromLikeablePerson(likeablePerson);
         likeablePerson.getToInstaMember().removeToLikeablePerson(likeablePerson);
         likeablePersonRepository.delete(likeablePerson);
