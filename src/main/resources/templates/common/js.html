@@ -1,15 +1,15 @@
 <script th:inline="javascript">
     // 일반 메세지
-    const localStorageKeyAboutHistoryBackMsg = [[${localStorageKeyAboutHistoryBackMsg}]];
-    const historyBackMsg = [[${historyBackMsg}]];
+    const localStorageKeyAboutHistoryBackMsg = /*[[${localStorageKeyAboutHistoryBackMsg}]]*/ null;
+    const historyBackMsg = /*[[${historyBackMsg}]]*/ null;
 
     if (localStorageKeyAboutHistoryBackMsg && localStorageKeyAboutHistoryBackMsg.trim().length > 0) {
         localStorage.setItem(localStorageKeyAboutHistoryBackMsg, historyBackMsg);
     }
 
     // 에러 메세지
-    const localStorageKeyAboutHistoryBackErrorMsg = [[${localStorageKeyAboutHistoryBackErrorMsg}]];
-    const historyBackErrorMsg = [[${historyBackErrorMsg}]];
+    const localStorageKeyAboutHistoryBackErrorMsg = /*[[${localStorageKeyAboutHistoryBackErrorMsg}]]*/ null;
+    const historyBackErrorMsg = /*[[${historyBackErrorMsg}]]*/ null;
 
     if (localStorageKeyAboutHistoryBackErrorMsg && localStorageKeyAboutHistoryBackErrorMsg.trim().length > 0) {
         localStorage.setItem(localStorageKeyAboutHistoryBackErrorMsg, historyBackErrorMsg);

@@ -30,10 +30,12 @@ public class LikeablePersonService {
                 .catchEx(rsData -> changeReason(attractiveTypeCode, rsData));
     }
 
+
     private RsData<LikeablePerson> changeReason(int attractiveTypeCode, RsData<LikeablePerson> rsData) {
         LikeablePerson likeablePerson = (LikeablePerson) rsData.getAttribute("likeablePerson");
 
-        likeablePersonRepository.updateAttractiveTypeCode(likeablePerson.getId(), attractiveTypeCode);
+        likeablePerson.setAttractiveTypeCode(attractiveTypeCode);
+        likeablePersonRepository.save(likeablePerson);
 
         return RsData.of("S-2", "호감이유가 바뀌었습니다.", likeablePerson);
     }
@@ -77,5 +79,13 @@ public class LikeablePersonService {
     public RsData<LikeablePerson> getLikee(long id) {
         Optional<LikeablePerson> pair = likeablePersonRepository.findById(id);
         return pair.map(RsData::successOf).orElseGet(() -> RsData.of("F-1", "존재하지 않는 페어입니다."));
+    }
+
+    public Optional<LikeablePerson> findById(long id) {
+        return likeablePersonRepository.findById(id);
+    }
+
+    public Optional<LikeablePerson> findByFromInstaMember_usernameAndToInstaMember_username(String fromName, String toName) {
+        return likeablePersonRepository.findByFromInstaMember_UsernameAndToInstaMember_Username(fromName,toName);
     }
 }
