@@ -81,4 +81,18 @@ class LikeablePersonServiceTest {
         assertThat(likeablePerson).isPresent();
         assertThat(likeablePerson.get().getAttractiveTypeCode()).isEqualTo(1);
     }
+
+    @Test
+    void 삭제_실패_쿨타임_안끝남() {
+        Member member3 = memberRepository.findByUsername("user3").get();
+
+        String member3InstaName = member3.getInstaMember().getUsername();
+        Optional<LikeablePerson> likeablePerson = likeablePersonService.findByFromInstaMember_usernameAndToInstaMember_username(member3InstaName, "insta_user4");
+
+        assertThat(likeablePerson).isPresent();
+        RsData result = likeablePersonService.cancel(likeablePerson.get());
+
+        assertThat(result.isFail()).isTrue();
+        assertThat(result.getMsg()).isEqualTo("호감갱신 후 30분 뒤에 삭제가능합니다.");
+    }
 }
