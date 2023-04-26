@@ -14,6 +14,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +41,15 @@ public class LikeablePersonService {
 
     private RsData<LikeablePerson> changeReason(int attractiveTypeCode, RsData<LikeablePerson> rsData) {
         LikeablePerson likeablePerson = (LikeablePerson) rsData.getAttribute("likeablePerson");
+
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime modifyDate = likeablePerson.getModifyDate();
+        long minutesBetween = ChronoUnit.MINUTES.between(modifyDate, now);
+
+        if (minutesBetween < 30) {
+            return RsData.of("F-5", "호감사유는 30분마다 수정가능합니다.");
+        }
 
         Integer oldAttractiveTypeCode = likeablePerson.getAttractiveTypeCode();
         likeablePerson.setAttractiveTypeCode(attractiveTypeCode);
@@ -71,10 +82,6 @@ public class LikeablePersonService {
         publisher.publishEvent(new EventAfterLike(this, likeablePerson));
 
         return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeablePerson);
-    }
-
-    public List<LikeablePerson> findByFromInstaMemberId(Long fromInstaMemberId) {
-        return likeablePersonRepository.findByFromInstaMemberId(fromInstaMemberId);
     }
 
     @Transactional
