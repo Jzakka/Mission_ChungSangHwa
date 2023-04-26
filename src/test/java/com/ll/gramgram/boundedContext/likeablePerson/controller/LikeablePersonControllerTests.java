@@ -1,11 +1,15 @@
 package com.ll.gramgram.boundedContext.likeablePerson.controller;
 
 
+import com.ll.TestUtil;
 import com.ll.gramgram.base.appConfig.AppConfig;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
+import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.likeablePerson.service.LikeablePersonService;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.boundedContext.member.service.MemberService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +42,10 @@ public class LikeablePersonControllerTests {
     private MemberService memberService;
     @Autowired
     private LikeablePersonService likeablePersonService;
+    @Autowired
+    private LikeablePersonRepository likeablePersonRepository;
+    @PersistenceContext
+    private EntityManager em;
 
     @Test
     @DisplayName("등록 폼(인스타 인증을 안해서 폼 대신 메세지)")
@@ -168,6 +176,7 @@ public class LikeablePersonControllerTests {
     @DisplayName("수정 폼 처리")
     @WithUserDetails("user3")
     void t015() throws Exception {
+        TestUtil.changeModifyDateForce(2L, likeablePersonRepository, em);
         // WHEN
         ResultActions resultActions = mvc
                 .perform(post("/usr/likeablePerson/modify/2")
@@ -182,7 +191,6 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("modify"))
                 .andExpect(status().is3xxRedirection());
-        ;
     }
 
     @Test
@@ -218,6 +226,7 @@ public class LikeablePersonControllerTests {
     @DisplayName("호감취소")
     @WithUserDetails("user3")
     void t006() throws Exception {
+        TestUtil.changeModifyDateForce(1L, likeablePersonRepository, em);
         // WHEN
         ResultActions resultActions = mvc
                 .perform(
@@ -374,6 +383,7 @@ public class LikeablePersonControllerTests {
     @DisplayName("기존에 호감을 표시한 유저에게 새로운 사유로 호감을 표시하면 추가가 아니라 수정이 된다.")
     @WithUserDetails("user3")
     void t013() throws Exception {
+        TestUtil.changeModifyDateForce(1L, likeablePersonRepository, em);
         // WHEN
         ResultActions resultActions = mvc
                 .perform(post("/usr/likeablePerson/like")

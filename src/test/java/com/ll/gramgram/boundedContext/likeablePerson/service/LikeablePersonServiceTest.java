@@ -1,10 +1,18 @@
 package com.ll.gramgram.boundedContext.likeablePerson.service;
 
+import com.ll.TestUtil;
 import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
+import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.boundedContext.member.repository.MemberRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,13 +20,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @SpringBootTest
 @Transactional
 class LikeablePersonServiceTest {
     @Autowired
     private LikeablePersonService likeablePersonService;
+
+    @Autowired
+    private LikeablePersonRepository likeablePersonRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -35,11 +51,20 @@ class LikeablePersonServiceTest {
     }
 
     @Test
+    @Transactional
     void 호감표시_성공_이유변경() {
         Member member3 = memberRepository.findByUsername("user3").get();
         Member member2 = memberRepository.findByUsername("user2").get();
-        likeablePersonService.like(member2, member3.getInstaMember().getUsername(), 0);
-        RsData<LikeablePerson> result = likeablePersonService.like(member2, member3.getInstaMember().getUsername(), 2);
+        String member3InstaName = member3.getInstaMember().getUsername();
+        String member2InstaName = member2.getInstaMember().getUsername();
+
+        likeablePersonService.like(member2, member3InstaName, 0);
+
+        LikeablePerson likeablePerson = likeablePersonService.findByFromInstaMember_usernameAndToInstaMember_username(member2InstaName, member3InstaName).get();
+
+        TestUtil.changeModifyDateForce(likeablePerson.getId(), likeablePersonRepository, em);
+
+        RsData<LikeablePerson> result = likeablePersonService.like(member2, member3InstaName, 2);
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getMsg()).isEqualTo("호감이유가 바뀌었습니다.");
     }
