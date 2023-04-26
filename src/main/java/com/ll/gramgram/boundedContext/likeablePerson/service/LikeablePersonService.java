@@ -35,21 +35,13 @@ public class LikeablePersonService {
                 .then(rsData -> validator.checkAlreadyLike(member, username, attractiveTypeCode, rsData))
                 .then(rsData -> validator.checkMaximumLike(member, rsData))
                 .then(rsData -> successfulLike(member, username, attractiveTypeCode, rsData))
+                .catchEx(rsData -> validator.checkCoolTime("호감사유는 30분마다 수정가능합니다.", rsData))
                 .catchEx(rsData -> changeReason(attractiveTypeCode, rsData));
     }
 
 
     private RsData<LikeablePerson> changeReason(int attractiveTypeCode, RsData<LikeablePerson> rsData) {
         LikeablePerson likeablePerson = (LikeablePerson) rsData.getAttribute("likeablePerson");
-
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime modifyDate = likeablePerson.getModifyDate();
-        long minutesBetween = ChronoUnit.MINUTES.between(modifyDate, now);
-
-        if (minutesBetween < 30) {
-            return RsData.of("F-5", "호감사유는 30분마다 수정가능합니다.");
-        }
 
         Integer oldAttractiveTypeCode = likeablePerson.getAttractiveTypeCode();
         likeablePerson.setAttractiveTypeCode(attractiveTypeCode);
@@ -86,14 +78,17 @@ public class LikeablePersonService {
 
     @Transactional
     public RsData cancel(LikeablePerson likeablePerson) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime modifyDate = likeablePerson.getModifyDate();
-        long minutesBetween = ChronoUnit.MINUTES.between(modifyDate, now);
+        return RsData.produce(LikeablePerson.class)
+                .then(rsData -> {
+                    rsData.setAttribute("likeablePerson", likeablePerson);
+                    return rsData;
+                })
+                .then(rsData -> validator.checkCoolTime("호감갱신 후 30분 뒤에 삭제가능합니다.",rsData ))
+                .then(this::successfulCancel);
+    }
 
-        if (minutesBetween < 30) {
-            return RsData.of("F-5", "호감갱신 후 30분 뒤에 삭제가능합니다.");
-        }
-
+    private RsData<LikeablePerson> successfulCancel(RsData<LikeablePerson> rsData) {
+        LikeablePerson likeablePerson = (LikeablePerson) rsData.getAttribute("likeablePerson");
         publisher.publishEvent(new EventBeforeCancelLike(this, likeablePerson));
 
         likeablePerson.getFromInstaMember().removeFromLikeablePerson(likeablePerson);
