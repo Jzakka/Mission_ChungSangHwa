@@ -86,6 +86,14 @@ public class LikeablePersonService {
 
     @Transactional
     public RsData cancel(LikeablePerson likeablePerson) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime modifyDate = likeablePerson.getModifyDate();
+        long minutesBetween = ChronoUnit.MINUTES.between(modifyDate, now);
+
+        if (minutesBetween < 30) {
+            return RsData.of("F-5", "호감갱신 후 30분 뒤에 삭제가능합니다.");
+        }
+
         publisher.publishEvent(new EventBeforeCancelLike(this, likeablePerson));
 
         likeablePerson.getFromInstaMember().removeFromLikeablePerson(likeablePerson);
