@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -64,5 +66,19 @@ class LikeablePersonServiceTest {
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getMsg()).isEqualTo("호감상대는 최대 %d명까지 등록 가능합니다.".formatted(maxLikeablePerson));
+    }
+
+    @Test
+    void 수정_실패_쿨타임_안끝남() {
+        Member member3 = memberRepository.findByUsername("user3").get();
+
+        RsData<LikeablePerson> result = likeablePersonService.like(member3, "insta_user4", 2);
+        String member3InstaName = member3.getInstaMember().getUsername();
+        Optional<LikeablePerson> likeablePerson = likeablePersonService.findByFromInstaMember_usernameAndToInstaMember_username(member3InstaName, "insta_user4");
+
+        assertThat(result.isFail()).isTrue();
+        assertThat(result.getMsg()).isEqualTo("호감사유는 30분마다 수정가능합니다.");
+        assertThat(likeablePerson).isPresent();
+        assertThat(likeablePerson.get().getAttractiveTypeCode()).isEqualTo(1);
     }
 }
