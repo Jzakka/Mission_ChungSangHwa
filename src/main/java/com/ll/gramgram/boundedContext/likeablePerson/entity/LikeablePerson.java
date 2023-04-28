@@ -1,5 +1,6 @@
 package com.ll.gramgram.boundedContext.likeablePerson.entity;
 
+import com.ll.gramgram.base.baseEntity.BaseEntity;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import jakarta.persistence.*;
@@ -22,15 +23,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @ToString
 @Entity
 @Getter
-public class LikeablePerson {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long id;
-    @CreatedDate
-    private LocalDateTime createDate;
-    @LastModifiedDate
-    private LocalDateTime modifyDate;
-
+public class LikeablePerson extends BaseEntity {
     @ManyToOne
     @ToString.Exclude
     private InstaMember fromInstaMember; // 호감을 표시한 사람(인스타 멤버)
