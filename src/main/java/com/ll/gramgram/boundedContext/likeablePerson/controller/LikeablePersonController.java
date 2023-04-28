@@ -2,7 +2,7 @@ package com.ll.gramgram.boundedContext.likeablePerson.controller;
 
 import com.ll.gramgram.base.rq.Rq;
 import com.ll.gramgram.base.rsData.RsData;
-import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
+import com.ll.gramgram.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.service.LikeablePersonService;
 import jakarta.validation.Valid;
@@ -115,5 +115,13 @@ public class LikeablePersonController {
         }
 
         return rq.redirectWithMsg("/usr/likeablePerson/list", rsData);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/toList")
+    @ResponseBody
+    public String showToList(Model model) {
+        //TODO : showToList 구현 필요
+        return "usr/likeablePerson/toList 구현필요";
     }
 }

@@ -1,4 +1,4 @@
-package com.ll.gramgram.boundedContext.instaMember.entity;
+package com.ll.gramgram.instaMember.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;

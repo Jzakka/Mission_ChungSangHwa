@@ -1,6 +1,6 @@
 package com.ll.gramgram.boundedContext.notification.service;
 
-import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
+import com.ll.gramgram.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.notification.entity.Notification;
 import com.ll.gramgram.boundedContext.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
