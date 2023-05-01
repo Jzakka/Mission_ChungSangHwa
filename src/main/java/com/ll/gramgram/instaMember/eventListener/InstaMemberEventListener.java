@@ -21,6 +21,7 @@ public class InstaMemberEventListener {
     @Transactional
     public void listen(EventAfterModifyAttractiveType event) {
         instaMemberService.whenAfterModifyAttractiveType(event.getLikeablePerson(), event.getOldAttractiveTypeCode());
+        notificationService.notify(event.getLikeablePerson(), event.getOldAttractiveTypeCode());
     }
 
     @EventListener
