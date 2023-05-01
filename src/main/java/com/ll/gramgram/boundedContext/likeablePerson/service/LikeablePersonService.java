@@ -22,7 +22,6 @@ import java.util.Optional;
 public class LikeablePersonService {
     private final LikeablePersonRepository likeablePersonRepository;
     private final LikeablePersonValidator validator;
-
     private final ApplicationEventPublisher publisher;
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
@@ -32,7 +31,7 @@ public class LikeablePersonService {
                 .then(rsData -> validator.checkAlreadyLike(member, username, attractiveTypeCode, rsData))
                 .then(rsData -> validator.checkMaximumLike(member, rsData))
                 .then(rsData -> successfulLike(member, username, attractiveTypeCode, rsData))
-                .catchEx(rsData -> validator.checkCoolTime("호감사유는 30분마다 수정가능합니다.", rsData))
+                .catchEx(rsData -> validator.checkCoolTime("호감사유는 %d분마다 수정가능합니다.", rsData))
                 .catchEx(rsData -> changeReason(attractiveTypeCode, rsData));
     }
 
@@ -80,7 +79,7 @@ public class LikeablePersonService {
                     rsData.setAttribute("likeablePerson", likeablePerson);
                     return rsData;
                 })
-                .then(rsData -> validator.checkCoolTime("호감갱신 후 30분 뒤에 삭제가능합니다.",rsData ))
+                .then(rsData -> validator.checkCoolTime("호감갱신 후 %d분 뒤에 삭제가능합니다.",rsData ))
                 .then(this::successfulCancel);
     }
 

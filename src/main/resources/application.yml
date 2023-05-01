@@ -83,6 +83,7 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
 constant:
   max-likeable-person: 10
+  modify-delete-cooltime: 180
 server:
   port: 443
   ssl:

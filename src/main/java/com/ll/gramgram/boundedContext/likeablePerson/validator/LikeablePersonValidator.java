@@ -6,6 +6,7 @@ import com.ll.gramgram.boundedContext.instaMember.service.InstaMemberService;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.member.entity.Member;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,9 @@ public class LikeablePersonValidator {
 
     @Value("${constant.max-likeable-person}")
     private Integer maxLikeablePerson;
+
+    @Value("${constant.modify-delete-cooltime}")
+    private Integer coolTime;
 
     public RsData<LikeablePerson> checkOwnInstagramId(Member member, RsData<LikeablePerson> rsData) {
         if (member.hasConnectedInstaMember() == false) {
@@ -77,8 +81,8 @@ public class LikeablePersonValidator {
         LocalDateTime modifyDate = likeablePerson.getModifyDate();
         long minutesBetween = ChronoUnit.MINUTES.between(modifyDate, now);
 
-        if (minutesBetween < 30) {
-            return RsData.of("F-5", message);
+        if (minutesBetween < coolTime) {
+            return RsData.of("F-5", message.formatted(coolTime));
         }
         return rsData;
     }

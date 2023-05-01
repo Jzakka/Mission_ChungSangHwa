@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,10 +31,10 @@ public interface LikeablePersonRepository extends JpaRepository<LikeablePerson, 
     @Modifying
     @Query(value = """
             UPDATE likeable_person
-            SET modify_date = CURRENT_TIMESTAMP() - INTERVAL '40' MINUTE
-            WHERE id = ?
+            SET modify_date = :newModifyDate
+            WHERE id = :id
             """
             , nativeQuery = true
     )
-    void changeModifyDate(@Param("id") Long id);
+    void changeModifyDate(@Param("id") Long id, @Param("newModifyDate")LocalDateTime newModifyDate);
 }
