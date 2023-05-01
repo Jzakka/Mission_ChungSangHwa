@@ -247,6 +247,27 @@ public class LikeablePersonControllerTests {
     }
 
     @Test
+    @DisplayName("호감취소(실패, 쿨타임 안지남)")
+    @WithUserDetails("user3")
+    void 호감취소_실패() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/usr/likeablePerson/1")
+                                .with(csrf())
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("cancel"))
+                .andExpect(status().is4xxClientError());
+
+        assertThat(likeablePersonService.findById(1L)).isPresent();
+    }
+
+    @Test
     @DisplayName("호감취소(없는거 취소, 취소가 안되어야 함)")
     @WithUserDetails("user3")
     void t007() throws Exception {
