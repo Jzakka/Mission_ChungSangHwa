@@ -429,4 +429,32 @@ public class LikeablePersonControllerTests {
 
         assertThat(newAttractiveTypeCode).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("호감사유 수정(실패, 쿨타임 안지남)")
+    @WithUserDetails("user3")
+    void 호감사유_수정_실패_쿨타임_안지남() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/usr/likeablePerson/like")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "insta_user4")
+                        .param("attractiveTypeCode", "2")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("like"))
+                .andExpect(status().is4xxClientError());
+
+        Optional<LikeablePerson> opLikeablePerson = likeablePersonService.findByFromInstaMember_usernameAndToInstaMember_username("insta_user3", "insta_user4");
+
+        int newAttractiveTypeCode = opLikeablePerson
+                .map(LikeablePerson::getAttractiveTypeCode)
+                .orElse(-1);
+
+        assertThat(newAttractiveTypeCode).isEqualTo(1);
+    }
 }
