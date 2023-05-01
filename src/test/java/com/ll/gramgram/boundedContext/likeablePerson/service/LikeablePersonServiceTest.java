@@ -16,6 +16,8 @@ import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -42,6 +44,20 @@ class LikeablePersonServiceTest {
     @Value("${constant.max-likeable-person}")
     private Integer maxLikeablePerson;
 
+    @Value("${constant.modify-delete-cooltime}")
+    private Integer coolTime;
+
+    @TestConfiguration
+    static class MyTestConfiguration {
+        @Bean
+        public TestUtil myService() {
+            return new TestUtil();
+        }
+    }
+
+    @Autowired
+    private TestUtil testUtil;
+    
     @Test
     void 호감표시_성공() {
         Member member3 = memberRepository.findByUsername("user3").get();
@@ -62,7 +78,7 @@ class LikeablePersonServiceTest {
 
         LikeablePerson likeablePerson = likeablePersonService.findByFromInstaMember_usernameAndToInstaMember_username(member2InstaName, member3InstaName).get();
 
-        TestUtil.changeModifyDateForce(likeablePerson.getId(), likeablePersonRepository, em);
+        testUtil.changeModifyDateForce(likeablePerson.getId(), likeablePersonRepository, em);
 
         RsData<LikeablePerson> result = likeablePersonService.like(member2, member3InstaName, 2);
         assertThat(result.isSuccess()).isTrue();
@@ -102,7 +118,7 @@ class LikeablePersonServiceTest {
         Optional<LikeablePerson> likeablePerson = likeablePersonService.findByFromInstaMember_usernameAndToInstaMember_username(member3InstaName, "insta_user4");
 
         assertThat(result.isFail()).isTrue();
-        assertThat(result.getMsg()).isEqualTo("호감사유는 30분마다 수정가능합니다.");
+        assertThat(result.getMsg()).isEqualTo("호감사유는 %d분마다 수정가능합니다.".formatted(coolTime));
         assertThat(likeablePerson).isPresent();
         assertThat(likeablePerson.get().getAttractiveTypeCode()).isEqualTo(1);
     }
@@ -118,6 +134,6 @@ class LikeablePersonServiceTest {
         RsData result = likeablePersonService.cancel(likeablePerson.get());
 
         assertThat(result.isFail()).isTrue();
-        assertThat(result.getMsg()).isEqualTo("호감갱신 후 30분 뒤에 삭제가능합니다.");
+        assertThat(result.getMsg()).isEqualTo("호감갱신 후 %d분 뒤에 삭제가능합니다.".formatted(coolTime));
     }
 }

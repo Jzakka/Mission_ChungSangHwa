@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -46,6 +48,17 @@ public class LikeablePersonControllerTests {
     private LikeablePersonRepository likeablePersonRepository;
     @PersistenceContext
     private EntityManager em;
+
+    @TestConfiguration
+    static class MyTestConfiguration {
+        @Bean
+        public TestUtil myService() {
+            return new TestUtil();
+        }
+    }
+
+    @Autowired
+    private TestUtil testUtil;
 
     @Test
     @DisplayName("등록 폼(인스타 인증을 안해서 폼 대신 메세지)")
@@ -176,7 +189,7 @@ public class LikeablePersonControllerTests {
     @DisplayName("수정 폼 처리")
     @WithUserDetails("user3")
     void t015() throws Exception {
-        TestUtil.changeModifyDateForce(2L, likeablePersonRepository, em);
+        testUtil.changeModifyDateForce(2L, likeablePersonRepository, em);
         // WHEN
         ResultActions resultActions = mvc
                 .perform(post("/usr/likeablePerson/modify/2")
@@ -226,7 +239,7 @@ public class LikeablePersonControllerTests {
     @DisplayName("호감취소")
     @WithUserDetails("user3")
     void t006() throws Exception {
-        TestUtil.changeModifyDateForce(1L, likeablePersonRepository, em);
+        testUtil.changeModifyDateForce(1L, likeablePersonRepository, em);
         // WHEN
         ResultActions resultActions = mvc
                 .perform(
@@ -404,7 +417,7 @@ public class LikeablePersonControllerTests {
     @DisplayName("기존에 호감을 표시한 유저에게 새로운 사유로 호감을 표시하면 추가가 아니라 수정이 된다.")
     @WithUserDetails("user3")
     void t013() throws Exception {
-        TestUtil.changeModifyDateForce(1L, likeablePersonRepository, em);
+        testUtil.changeModifyDateForce(1L, likeablePersonRepository, em);
         // WHEN
         ResultActions resultActions = mvc
                 .perform(post("/usr/likeablePerson/like")
