@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +53,7 @@ public class LikeablePersonValidator {
         return rsData;
     }
 
-    public RsData<LikeablePerson> checkSameReason(int attractiveTypeCode, LikeablePerson likeablePerson, RsData<LikeablePerson> rsData) {
+    private RsData<LikeablePerson> checkSameReason(int attractiveTypeCode, LikeablePerson likeablePerson, RsData<LikeablePerson> rsData) {
         if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
             return RsData.of("F-3", "이미 호감표시하였습니다.");
         }
@@ -64,6 +66,19 @@ public class LikeablePersonValidator {
         List<LikeablePerson> likeList = likeablePersonRepository.findByFromInstaMemberId(member.getInstaMember().getId());
         if (likeList.size() == maxLikeablePerson) {
             return RsData.of("F-4", "호감상대는 최대 %d명까지 등록 가능합니다.".formatted(maxLikeablePerson));
+        }
+        return rsData;
+    }
+
+    public RsData<LikeablePerson> checkCoolTime(String message, RsData<LikeablePerson> rsData) {
+        LikeablePerson likeablePerson = (LikeablePerson) rsData.getAttribute("likeablePerson");
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime modifyDate = likeablePerson.getModifyDate();
+        long minutesBetween = ChronoUnit.MINUTES.between(modifyDate, now);
+
+        if (minutesBetween < 30) {
+            return RsData.of("F-5", message);
         }
         return rsData;
     }

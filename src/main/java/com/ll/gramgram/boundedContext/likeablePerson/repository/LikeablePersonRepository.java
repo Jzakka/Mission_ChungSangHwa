@@ -26,4 +26,14 @@ public interface LikeablePersonRepository extends JpaRepository<LikeablePerson, 
             "lp.modifyDate = CURRENT_TIMESTAMP " +
             "where lp.id=:id")
     void updateAttractiveTypeCode(@Param("id") Long id, @Param("attractiveTypeCode") Integer typeCode);
+
+    @Modifying
+    @Query(value = """
+            UPDATE likeable_person
+            SET modify_date = CURRENT_TIMESTAMP() - INTERVAL '40' MINUTE
+            WHERE id = ?
+            """
+            , nativeQuery = true
+    )
+    void changeModifyDate(@Param("id") Long id);
 }

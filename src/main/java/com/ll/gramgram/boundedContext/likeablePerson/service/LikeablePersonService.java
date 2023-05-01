@@ -14,7 +14,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,6 +32,7 @@ public class LikeablePersonService {
                 .then(rsData -> validator.checkAlreadyLike(member, username, attractiveTypeCode, rsData))
                 .then(rsData -> validator.checkMaximumLike(member, rsData))
                 .then(rsData -> successfulLike(member, username, attractiveTypeCode, rsData))
+                .catchEx(rsData -> validator.checkCoolTime("호감사유는 30분마다 수정가능합니다.", rsData))
                 .catchEx(rsData -> changeReason(attractiveTypeCode, rsData));
     }
 
@@ -73,12 +73,19 @@ public class LikeablePersonService {
         return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeablePerson);
     }
 
-    public List<LikeablePerson> findByFromInstaMemberId(Long fromInstaMemberId) {
-        return likeablePersonRepository.findByFromInstaMemberId(fromInstaMemberId);
-    }
-
     @Transactional
     public RsData cancel(LikeablePerson likeablePerson) {
+        return RsData.produce(LikeablePerson.class)
+                .then(rsData -> {
+                    rsData.setAttribute("likeablePerson", likeablePerson);
+                    return rsData;
+                })
+                .then(rsData -> validator.checkCoolTime("호감갱신 후 30분 뒤에 삭제가능합니다.",rsData ))
+                .then(this::successfulCancel);
+    }
+
+    private RsData<LikeablePerson> successfulCancel(RsData<LikeablePerson> rsData) {
+        LikeablePerson likeablePerson = (LikeablePerson) rsData.getAttribute("likeablePerson");
         publisher.publishEvent(new EventBeforeCancelLike(this, likeablePerson));
 
         likeablePerson.getFromInstaMember().removeFromLikeablePerson(likeablePerson);

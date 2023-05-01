@@ -78,8 +78,12 @@ public class LikeablePersonController {
         }
         LikeablePerson person = likeeResult.getData();
         if (person.isLikeeOf(rq.getMember())) {
-            likeablePersonService.cancel(person);
-            return rq.redirectWithMsg("/usr/likeablePerson/list", likeeResult);
+            RsData canceledResult = likeablePersonService.cancel(person);
+            if (canceledResult.isSuccess()) {
+                return rq.redirectWithMsg("/usr/likeablePerson/list", "삭제에 성공했습니다.");
+            } else {
+                return rq.historyBack(canceledResult);
+            }
         }
 
         return rq.historyBack("삭제권한 없음");
