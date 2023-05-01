@@ -1,7 +1,7 @@
 package com.ll.gramgram.boundedContext.likeablePerson.entity;
 
 import com.ll.gramgram.base.baseEntity.BaseEntity;
-import com.ll.gramgram.instaMember.entity.InstaMember;
+import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.standard.util.Ut;
 import jakarta.persistence.*;
