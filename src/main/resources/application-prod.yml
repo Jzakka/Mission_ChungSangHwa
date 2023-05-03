@@ -12,6 +12,20 @@ spring:
         show_sql: false
         format_sql: false
         use_sql_comments: false
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
+          kakao:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
+          google:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
+          facebook:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
+          instagram:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
 logging:
   level:
     root: INFO
