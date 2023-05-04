@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     public List<Notification> findByToInstaMember(InstaMember toInstaMember) {
-        return notificationRepository.findByToInstaMember(toInstaMember);
+        return notificationRepository.findByToInstaMemberAndReadDateIsNull(toInstaMember);
     }
 
     public void notify(LikeablePerson likeablePerson) {
@@ -37,6 +38,15 @@ public class NotificationService {
                 .typeCode("ModifyAttractiveType")
                 .oldAttractiveTypeCode(oldAttractiveTypeCode)
                 .build();
+        notificationRepository.save(notification);
+    }
+
+    public Notification findById(Long id) {
+        return notificationRepository.findById(id).orElseThrow();
+    }
+
+    public void read(Notification notification) {
+        notification.read();
         notificationRepository.save(notification);
     }
 }

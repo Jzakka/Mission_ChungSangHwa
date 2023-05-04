@@ -5,13 +5,16 @@ import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.notification.entity.Notification;
 import com.ll.gramgram.boundedContext.notification.service.NotificationService;
 import jakarta.persistence.ManyToOne;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,5 +41,13 @@ public class NotificationController {
         model.addAttribute("notifications", notifications);
 
         return "usr/notification/list";
+    }
+
+    @GetMapping("/read/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public String readNotification(@PathVariable("id")Long id){
+        Notification notification = notificationService.findById(id);
+        notificationService.read(notification);
+        return rq.redirectWithMsg("/usr/notification/list", "메시지를 읽음처리하였습니다.");
     }
 }

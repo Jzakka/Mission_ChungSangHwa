@@ -84,3 +84,16 @@ logging:
 constant:
   max-likeable-person: 10
   modify-delete-cooltime: 180
+custom:
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            devUserOauthId: 'DUMMY_NAVER_OAUTH_ID'
+          kakao:
+            devUserOauthId: 'DUMMY_KAKAO_OAUTH_ID'
+          google:
+            devUserOauthId: 'DUMMY_GOOGLE_OAUTH_ID'
+          facebook:
+            devUserOauthId: 'DUMMY_FACEBOOK_OAUTH_ID'

@@ -18,11 +18,14 @@
         </div>
 
         <div th:each="notification: ${notifications}" class="card bg-base-100 shadow-xl">
-            <div class="card-body">
+            <div th:if="${notification.readDate == null}" class="card-body">
                 <div class="flex flex-col gap-2">
-                    <div>
-                        <i class="fa-regular fa-clock"></i>
-                        알림
+                    <div class="flex justify-between">
+                        <div>
+                            <i class="fa-regular fa-clock"></i>
+                            알림
+                        </div>
+                        <a th:href="|read/${notification.id}|">X</a>
                     </div>
                     <div>
                         <span class="badge badge-primary notification-created-date" th:id="|notification${notification.id}|"
