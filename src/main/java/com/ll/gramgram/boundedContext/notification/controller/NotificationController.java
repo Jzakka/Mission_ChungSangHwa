@@ -2,6 +2,7 @@ package com.ll.gramgram.boundedContext.notification.controller;
 
 import com.ll.gramgram.base.rq.Rq;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
+import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.boundedContext.notification.entity.Notification;
 import com.ll.gramgram.boundedContext.notification.service.NotificationService;
 import jakarta.persistence.ManyToOne;
@@ -45,9 +46,24 @@ public class NotificationController {
 
     @GetMapping("/read/{id}")
     @PreAuthorize("isAuthenticated()")
-    public String readNotification(@PathVariable("id")Long id){
+    public String readNotification(@PathVariable("id") Long id) {
+        Member actor = rq.getMember();
         Notification notification = notificationService.findById(id);
-        notificationService.read(notification);
-        return rq.redirectWithMsg("/usr/notification/list", "메시지를 읽음처리하였습니다.");
+        if (actor.hasConnectedInstaMember() && actor.getInstaMember().equals(notification.getToInstaMember())) {
+            notificationService.read(notification);
+            return rq.redirectWithMsg("/usr/notification/list", "메시지를 읽음처리하였습니다.");
+        }
+        return rq.historyBack("권한이 없습니다.");
+    }
+
+    @GetMapping("/readAll")
+    @PreAuthorize("isAuthenticated()")
+    public String readAllNotifications() {
+        Member actor = rq.getMember();
+        if (actor.hasConnectedInstaMember()) {
+            notificationService.readAll(actor.getInstaMember());
+            return rq.redirectWithMsg("/usr/notification/list", "메시지를 모두 읽음차리하였습니다.");
+        }
+        return rq.redirectWithMsg("/usr/instaMember/connect", "먼저 본인의 인스타그램 아이디를 입력해주세요.");
     }
 }

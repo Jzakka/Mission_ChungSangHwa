@@ -8,10 +8,14 @@
 
 <main layout:fragment="main" class="flex-grow flex items-center justify-center">
     <div class="max-w-2xl w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-regular fa-bell"></i>
-            알림
-        </h1>
+        <div class="flex justify-between m-1">
+            <h1 class="mb-4">
+                <i class="fa-regular fa-bell"></i>
+                알림
+            </h1>
+            <a th:href="readAll" class="text-gray-700 text-sm h-fit">모두 읽음 처리하기</a>
+        </div>
+
 
         <div class="text-center mt-10" th:if="${#lists.isEmpty(notifications)}">
             <i class="fa-regular fa-face-laugh"></i> 최근에 받은 알림이 없습니다.

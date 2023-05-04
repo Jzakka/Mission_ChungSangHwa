@@ -16,18 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class InstaMemberEventListener {
     private final InstaMemberService instaMemberService;
-    private final NotificationService notificationService;
 
     @EventListener
     public void listen(EventAfterModifyAttractiveType event) {
         instaMemberService.whenAfterModifyAttractiveType(event.getLikeablePerson(), event.getOldAttractiveTypeCode());
-        notificationService.notify(event.getLikeablePerson(), event.getOldAttractiveTypeCode());
     }
 
     @EventListener
     public void listen(EventAfterLike event) {
         instaMemberService.whenAfterLike(event.getLikeablePerson());
-        notificationService.notify(event.getLikeablePerson());
     }
 
     @EventListener

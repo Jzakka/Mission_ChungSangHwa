@@ -6,12 +6,13 @@ import com.ll.gramgram.boundedContext.notification.entity.Notification;
 import com.ll.gramgram.boundedContext.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
@@ -48,5 +49,9 @@ public class NotificationService {
     public void read(Notification notification) {
         notification.read();
         notificationRepository.save(notification);
+    }
+
+    public void readAll(InstaMember instaMember) {
+        notificationRepository.updateReadDateByToInstaMember(instaMember);
     }
 }
