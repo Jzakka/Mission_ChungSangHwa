@@ -1,9 +1,9 @@
 package com.ll.gramgram.boundedContext.instaMember.controller;
 
 
-import com.ll.gramgram.instaMember.controller.InstaMemberController;
-import com.ll.gramgram.instaMember.entity.InstaMember;
-import com.ll.gramgram.instaMember.service.InstaMemberService;
+
+import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
+import com.ll.gramgram.boundedContext.instaMember.service.InstaMemberService;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.boundedContext.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
