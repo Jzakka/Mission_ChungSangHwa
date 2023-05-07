@@ -45,4 +45,8 @@ public class Notification extends BaseEntity {
             default -> "능력";
         };
     }
+
+    public void read() {
+        readDate = LocalDateTime.now();
+    }
 }

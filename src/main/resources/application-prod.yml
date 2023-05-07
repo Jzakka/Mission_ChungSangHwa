@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://127.0.0.1:3306/gram__prod?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
+    url: jdbc:mariadb://172.17.0.1:3306/gram__prod?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
     username: lldj
     password: ${MYSQL_PW}
   jpa:
@@ -12,6 +12,20 @@ spring:
         show_sql: false
         format_sql: false
         use_sql_comments: false
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
+          kakao:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
+          google:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
+          facebook:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
+          instagram:
+            redirect-uri: 'https://melike.lwu.me/{action}/oauth2/code/{registrationId}'
 logging:
   level:
     root: INFO
