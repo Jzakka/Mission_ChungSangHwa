@@ -6,9 +6,12 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -105,5 +108,44 @@ public class InstaMember extends InstaMemberBase {
                 .likesCountByGenderWomanAndAttractiveTypeCode2(likesCountByGenderWomanAndAttractiveTypeCode2)
                 .likesCountByGenderWomanAndAttractiveTypeCode3(likesCountByGenderWomanAndAttractiveTypeCode3)
                 .build();
+    }
+
+    public List<LikeablePerson> getToLikeablePeople(Optional<String> gender, Optional<Integer> attractiveTypeCode, Optional<Integer> sortCode) {
+        return toLikeablePeople.stream()
+                .filter(l->{
+                    if (gender.isPresent() && StringUtils.hasText(gender.get())) {
+                        return l.getFromInstaMember().gender.equals(gender.get());
+                    }
+                    return true;
+                })
+                .filter(l->{
+                    if (attractiveTypeCode.isPresent()) {
+                        return l.getAttractiveTypeCode() == attractiveTypeCode.get();
+                    }
+                    return true;
+                })
+                .sorted((l1, l2)->{
+                    if (sortCode.isEmpty() || sortCode.get() == 1) {
+                        return l2.getCreateDate().isAfter(l1.getCreateDate()) ? 1 : 0;
+                    } else if (sortCode.get() == 2) {
+                        return l2.getModifyDate().isAfter(l1.getModifyDate()) ? 1: 0;
+                    } else if (sortCode.get() == 3) {
+                        InstaMember fromInstaMember1 = l1.getFromInstaMember();
+                        InstaMember fromInstaMember2 = l2.getFromInstaMember();
+
+                        return fromInstaMember2.toLikeablePeople.size() - fromInstaMember1.toLikeablePeople.size();
+                    } else if (sortCode.get() == 4) {
+                        InstaMember fromInstaMember1 = l1.getFromInstaMember();
+                        InstaMember fromInstaMember2 = l2.getFromInstaMember();
+
+                        return fromInstaMember1.toLikeablePeople.size() - fromInstaMember2.toLikeablePeople.size();
+                    } else if (sortCode.get() == 5) {
+                        InstaMember fromInstaMember1 = l1.getFromInstaMember();
+
+                        return fromInstaMember1.gender.equals("W") ? -1 : 0;
+                    } else {
+                        return l1.getAttractiveTypeCode() - l2.getAttractiveTypeCode();
+                    }
+                }).collect(Collectors.toList());
     }
 }
