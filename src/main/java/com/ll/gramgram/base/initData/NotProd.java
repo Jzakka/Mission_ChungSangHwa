@@ -1,6 +1,5 @@
 package com.ll.gramgram.base.initData;
 
-
 import com.ll.gramgram.boundedContext.instaMember.service.InstaMemberService;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.service.LikeablePersonService;
@@ -58,12 +57,13 @@ public class NotProd {
                 instaMemberService.connect(memberUser4, "insta_user4", "M");
                 instaMemberService.connect(memberUser5, "insta_user5", "W");
 
-                likeablePersonService.like(memberUser3, "insta_user4", 1);
-                likeablePersonService.like(memberUser3, "insta_user100", 2);
-                likeablePersonService.like(memberUser2, "chung_sanghwa", 1);
-                likeablePersonService.like(memberUser3, "chung_sanghwa", 2);
-                likeablePersonService.like(memberUser4, "chung_sanghwa", 3);
-                likeablePersonService.like(memberUser5, "chung_sanghwa", 1);
+                // 원활한 테스트와 개발을 위해서 자동으로 만들어지는 호감이 삭제, 수정이 가능하도록 쿨타임해제
+                LikeablePerson likeablePersonToInstaUser4 = likeablePersonService.like(memberUser3, "insta_user4", 1).getData();
+                Ut.reflection.setFieldValue(likeablePersonToInstaUser4, "modifyUnlockDate", LocalDateTime.now().minusSeconds(1));
+                LikeablePerson likeablePersonToInstaUser100 = likeablePersonService.like(memberUser3, "insta_user100", 2).getData();
+                Ut.reflection.setFieldValue(likeablePersonToInstaUser100, "modifyUnlockDate", LocalDateTime.now().minusSeconds(1));
+
+                LikeablePerson likeablePersonToInstaUserAbcd = likeablePersonService.like(memberUser3, "insta_user_abcd", 2).getData();
             }
         };
     }

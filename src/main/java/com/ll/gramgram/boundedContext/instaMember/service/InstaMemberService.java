@@ -141,8 +141,7 @@ public class InstaMemberService {
                 });
     }
 
-    public RsData<InstaMember> connect(Member actor, String gender, String oauthId,
-                                       String username, String accessToken) {
+    public RsData<InstaMember> connect(Member actor, String gender, String oauthId, String username, String accessToken) {
         Optional<InstaMember> opInstaMember = instaMemberRepository.findByOauthId(oauthId);
 
         if (opInstaMember.isPresent()) {

@@ -44,14 +44,14 @@ public class LikeablePersonController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/like")
-    public String like(@Valid LikeablePersonController.LikeForm addForm) {
-        RsData<LikeablePerson> createRsData = likeablePersonService.like(rq.getMember(), addForm.getUsername(), addForm.getAttractiveTypeCode());
+    public String like(@Valid LikeForm likeForm) {
+        RsData<LikeablePerson> rsData = likeablePersonService.like(rq.getMember(), likeForm.getUsername(), likeForm.getAttractiveTypeCode());
 
-        if (createRsData.isFail()) {
-            return rq.historyBack(createRsData);
+        if (rsData.isFail()) {
+            return rq.historyBack(rsData);
         }
 
-        return rq.redirectWithMsg("/usr/likeablePerson/list", createRsData);
+        return rq.redirectWithMsg("/usr/likeablePerson/list", rsData);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -61,6 +61,7 @@ public class LikeablePersonController {
 
         // 인스타인증을 했는지 체크
         if (instaMember != null) {
+            // 해당 인스타회원이 좋아하는 사람들 목록
             List<LikeablePerson> likeablePeople = instaMember.getFromLikeablePeople();
             model.addAttribute("likeablePeople", likeablePeople);
         }
@@ -71,28 +72,27 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
     public String cancel(@PathVariable Long id) {
-        RsData<LikeablePerson> likeeResult = likeablePersonService.getLikee(id);
+        LikeablePerson likeablePerson = likeablePersonService.findById(id).orElse(null);
 
-        if (likeeResult.isFail()) {
-            return rq.historyBack(likeeResult);
-        }
-        LikeablePerson person = likeeResult.getData();
-        if (person.isLikeeOf(rq.getMember())) {
-            RsData canceledResult = likeablePersonService.cancel(person);
-            if (canceledResult.isSuccess()) {
-                return rq.redirectWithMsg("/usr/likeablePerson/list", "삭제에 성공했습니다.");
-            } else {
-                return rq.historyBack(canceledResult);
-            }
-        }
+        RsData canDeleteRsData = likeablePersonService.canCancel(rq.getMember(), likeablePerson);
 
-        return rq.historyBack("삭제권한 없음");
+        if (canDeleteRsData.isFail()) return rq.historyBack(canDeleteRsData);
+
+        RsData deleteRsData = likeablePersonService.cancel(likeablePerson);
+
+        if (deleteRsData.isFail()) return rq.historyBack(deleteRsData);
+
+        return rq.redirectWithMsg("/usr/likeablePerson/list", deleteRsData);
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify/{id}")
     public String showModify(@PathVariable Long id, Model model) {
         LikeablePerson likeablePerson = likeablePersonService.findById(id).orElseThrow();
+
+        RsData canModifyRsData = likeablePersonService.canModify(rq.getMember(), likeablePerson);
+
+        if (canModifyRsData.isFail()) return rq.historyBack(canModifyRsData);
 
         model.addAttribute("likeablePerson", likeablePerson);
 
@@ -111,8 +111,7 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
     public String modify(@PathVariable Long id, @Valid ModifyForm modifyForm) {
-        String toUsername = likeablePersonService.getLikee(id).getData().getToInstaMember().getUsername();
-        RsData<LikeablePerson> rsData = likeablePersonService.like(rq.getMember(), toUsername, modifyForm.getAttractiveTypeCode());
+        RsData<LikeablePerson> rsData = likeablePersonService.modifyAttractive(rq.getMember(), id, modifyForm.getAttractiveTypeCode());
 
         if (rsData.isFail()) {
             return rq.historyBack(rsData);
@@ -123,9 +122,16 @@ public class LikeablePersonController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/toList")
-    @ResponseBody
     public String showToList(Model model) {
-        //TODO : showToList 구현 필요
-        return "usr/likeablePerson/toList 구현필요";
+        InstaMember instaMember = rq.getMember().getInstaMember();
+
+        // 인스타인증을 했는지 체크
+        if (instaMember != null) {
+            // 해당 인스타회원이 좋아하는 사람들 목록
+            List<LikeablePerson> likeablePeople = instaMember.getToLikeablePeople();
+            model.addAttribute("likeablePeople", likeablePeople);
+        }
+
+        return "usr/likeablePerson/toList";
     }
 }

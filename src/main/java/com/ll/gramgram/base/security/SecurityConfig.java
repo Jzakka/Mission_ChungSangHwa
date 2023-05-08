@@ -17,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomOAuth2AccessTokenResponseClient oAuth2AccessTokenResponseClient;
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -27,7 +28,9 @@ public class SecurityConfig {
                 .oauth2Login(
                         oauth2Login -> oauth2Login
                                 .loginPage("/usr/member/login")
-                                .tokenEndpoint(t->t.accessTokenResponseClient(oAuth2AccessTokenResponseClient))
+                                .tokenEndpoint(t -> t
+                                        .accessTokenResponseClient(oAuth2AccessTokenResponseClient)
+                                )
                 )
                 .logout(
                         logout -> logout

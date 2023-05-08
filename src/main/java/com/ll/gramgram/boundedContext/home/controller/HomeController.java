@@ -14,9 +14,10 @@ import java.util.Enumeration;
 @RequiredArgsConstructor
 public class HomeController {
     private final Rq rq;
+
     @GetMapping("/")
     public String showMain() {
-        if(rq.isLogout()) return "redirect:/usr/member/login";
+        if (rq.isLogout()) return "redirect:/usr/member/login";
 
         return "redirect:/usr/member/me";
     }
@@ -46,10 +47,4 @@ public class HomeController {
     public String showHistoryBackTest(HttpSession session) {
         return rq.historyBack("여기는 당신같은 사람이 오면 안되요.");
     }
-
-
-
-
-
-
 }

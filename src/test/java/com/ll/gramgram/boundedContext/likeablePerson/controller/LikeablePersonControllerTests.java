@@ -1,22 +1,18 @@
 package com.ll.gramgram.boundedContext.likeablePerson.controller;
 
 
-import com.ll.TestUtil;
 import com.ll.gramgram.base.appConfig.AppConfig;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
-import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.likeablePerson.service.LikeablePersonService;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.boundedContext.member.service.MemberService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class LikeablePersonControllerTests {
     @Autowired
     private MockMvc mvc;
@@ -44,21 +41,6 @@ public class LikeablePersonControllerTests {
     private MemberService memberService;
     @Autowired
     private LikeablePersonService likeablePersonService;
-    @Autowired
-    private LikeablePersonRepository likeablePersonRepository;
-    @PersistenceContext
-    private EntityManager em;
-
-    @TestConfiguration
-    static class MyTestConfiguration {
-        @Bean
-        public TestUtil myService() {
-            return new TestUtil();
-        }
-    }
-
-    @Autowired
-    private TestUtil testUtil;
 
     @Test
     @DisplayName("등록 폼(인스타 인증을 안해서 폼 대신 메세지)")
@@ -109,7 +91,6 @@ public class LikeablePersonControllerTests {
                 .andExpect(content().string(containsString("""
                         id="btn-like-1"
                         """.stripIndent().trim())));
-        ;
     }
 
     @Test
@@ -150,7 +131,6 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("like"))
                 .andExpect(status().is3xxRedirection());
-        ;
     }
 
     @Test
@@ -182,19 +162,16 @@ public class LikeablePersonControllerTests {
                 .andExpect(content().string(containsString("""
                         id="btn-modify-like-1"
                         """.stripIndent().trim())));
-        ;
     }
 
     @Test
     @DisplayName("수정 폼 처리")
     @WithUserDetails("user3")
     void t015() throws Exception {
-        testUtil.changeModifyDateForce(2L, likeablePersonRepository, em);
         // WHEN
         ResultActions resultActions = mvc
                 .perform(post("/usr/likeablePerson/modify/2")
                         .with(csrf()) // CSRF 키 생성
-                        .param("username", "abcd")
                         .param("attractiveTypeCode", "3")
                 )
                 .andDo(print());
@@ -232,14 +209,12 @@ public class LikeablePersonControllerTests {
                 .andExpect(content().string(containsString("""
                         data-test="toInstaMember_attractiveTypeDisplayName=성격"
                         """.stripIndent().trim())));
-        ;
     }
 
     @Test
     @DisplayName("호감취소")
     @WithUserDetails("user3")
     void t006() throws Exception {
-        testUtil.changeModifyDateForce(1L, likeablePersonRepository, em);
         // WHEN
         ResultActions resultActions = mvc
                 .perform(
@@ -257,27 +232,6 @@ public class LikeablePersonControllerTests {
         ;
 
         assertThat(likeablePersonService.findById(1L).isPresent()).isEqualTo(false);
-    }
-
-    @Test
-    @DisplayName("호감취소(실패, 쿨타임 안지남)")
-    @WithUserDetails("user3")
-    void 호감취소_실패() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(
-                        delete("/usr/likeablePerson/1")
-                                .with(csrf())
-                )
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("cancel"))
-                .andExpect(status().is4xxClientError());
-
-        assertThat(likeablePersonService.findById(1L)).isPresent();
     }
 
     @Test
@@ -340,7 +294,6 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("like"))
                 .andExpect(status().is4xxClientError());
-        ;
     }
 
     @Test
@@ -361,7 +314,6 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("like"))
                 .andExpect(status().is4xxClientError());
-        ;
     }
 
     @Test
@@ -382,7 +334,6 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("like"))
                 .andExpect(status().is4xxClientError());
-        ;
     }
 
     @Test
@@ -410,14 +361,12 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("like"))
                 .andExpect(status().is4xxClientError());
-        ;
     }
 
     @Test
     @DisplayName("기존에 호감을 표시한 유저에게 새로운 사유로 호감을 표시하면 추가가 아니라 수정이 된다.")
     @WithUserDetails("user3")
     void t013() throws Exception {
-        testUtil.changeModifyDateForce(1L, likeablePersonRepository, em);
         // WHEN
         ResultActions resultActions = mvc
                 .perform(post("/usr/likeablePerson/like")
@@ -432,7 +381,6 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("like"))
                 .andExpect(status().is3xxRedirection());
-        ;
 
         Optional<LikeablePerson> opLikeablePerson = likeablePersonService.findByFromInstaMember_usernameAndToInstaMember_username("insta_user3", "insta_user4");
 
@@ -444,30 +392,45 @@ public class LikeablePersonControllerTests {
     }
 
     @Test
-    @DisplayName("호감사유 수정(실패, 쿨타임 안지남)")
+    @DisplayName("호감취소는 쿨타임이 지나야 가능하다.")
     @WithUserDetails("user3")
-    void 호감사유_수정_실패_쿨타임_안지남() throws Exception {
+    void t016() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
-                .perform(post("/usr/likeablePerson/like")
-                        .with(csrf()) // CSRF 키 생성
-                        .param("username", "insta_user4")
-                        .param("attractiveTypeCode", "2")
+                .perform(
+                        delete("/usr/likeablePerson/3")
+                                .with(csrf())
                 )
                 .andDo(print());
 
         // THEN
         resultActions
                 .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("like"))
+                .andExpect(handler().methodName("cancel"))
+                .andExpect(status().is4xxClientError())
+        ;
+
+        assertThat(likeablePersonService.findById(3L).isPresent()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("호감사유변경은 쿨타임이 지나야 가능하다.")
+    @WithUserDetails("user3")
+    void t017() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/usr/likeablePerson/modify/3")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("attractiveTypeCode", "3")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("modify"))
                 .andExpect(status().is4xxClientError());
 
-        Optional<LikeablePerson> opLikeablePerson = likeablePersonService.findByFromInstaMember_usernameAndToInstaMember_username("insta_user3", "insta_user4");
-
-        int newAttractiveTypeCode = opLikeablePerson
-                .map(LikeablePerson::getAttractiveTypeCode)
-                .orElse(-1);
-
-        assertThat(newAttractiveTypeCode).isEqualTo(1);
+        assertThat(likeablePersonService.findById(3L).get().getAttractiveTypeCode()).isEqualTo(2);
     }
 }

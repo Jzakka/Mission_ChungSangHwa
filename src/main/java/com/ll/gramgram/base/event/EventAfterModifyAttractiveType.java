@@ -7,8 +7,9 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class EventAfterModifyAttractiveType extends ApplicationEvent {
     private final LikeablePerson likeablePerson;
-    private final Integer oldAttractiveTypeCode;
-    public EventAfterModifyAttractiveType(Object source, LikeablePerson likeablePerson, Integer oldAttractiveTypeCode) {
+    private final int oldAttractiveTypeCode;
+
+    public EventAfterModifyAttractiveType(Object source, LikeablePerson likeablePerson, int oldAttractiveTypeCode, int newAttractiveTypeCode) {
         super(source);
         this.likeablePerson = likeablePerson;
         this.oldAttractiveTypeCode = oldAttractiveTypeCode;

@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class InstaMemberBase extends BaseEntity {
+public abstract class InstaMemberBase extends BaseEntity {
     @Setter
     String gender;
 

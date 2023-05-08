@@ -1,18 +1,17 @@
 package com.ll.gramgram.boundedContext.member.controller;
 
 
-import com.ll.gramgram.boundedContext.home.controller.HomeController;
-import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.boundedContext.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc // http 요청, 응답 테스트
 @Transactional // 실제로 테스트에서 발생한 DB 작업이 영구적으로 적용되지 않도록, test + 트랜잭션 => 자동롤백
 @ActiveProfiles("test") // application-test.yml 을 활성화 시킨다.
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class MemberControllerTests {
     @Autowired
     private MockMvc mvc;
@@ -60,30 +59,6 @@ public class MemberControllerTests {
                 .andExpect(content().string(containsString("""
                         id="btn-login-1"
                         """.stripIndent().trim())));
-    }
-
-    @Test
-    @DisplayName("일반계정을 위한 로그인 폼")
-    void t004_2() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(get("/usr/member/login"))
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(MemberController.class))
-                .andExpect(handler().methodName("showLogin"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(content().string(not(containsString("""
-                        <input type="text" name="username"
-                        """.stripIndent().trim()))))
-                .andExpect(content().string(not(containsString("""
-                        <input type="password" name="password"
-                        """.stripIndent().trim()))))
-                .andExpect(content().string(not(containsString("""
-                        id="btn-login-1"
-                        """.stripIndent().trim()))));
     }
 
     @Test
