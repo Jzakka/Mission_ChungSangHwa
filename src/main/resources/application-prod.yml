@@ -21,5 +21,3 @@ logging:
 custom:
   site:
     baseUrl: https://melike.lwu.me
-server:
-  port: 80
