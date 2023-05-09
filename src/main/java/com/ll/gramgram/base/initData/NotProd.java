@@ -51,6 +51,7 @@ public class NotProd {
                 Member memberUser8 = memberService.join("user8", "1234").getData();
                 Member memberUser9 = memberService.join("user9", "1234").getData();
                 Member memberUser10 = memberService.join("user10", "1234").getData();
+                Member memberUser11 = memberService.join("user11", "1234").getData();
 
 
                 Member memberUser6ByKakao = memberService.whenSocialLogin("KAKAO", "KAKAO__%s".formatted(kakaoDevUserOAuthId)).getData();
@@ -84,6 +85,7 @@ public class NotProd {
                 9(M, 2) -> 4 (2)
                 7(M, 0) -> 4 (1)
                  */
+                LikeablePerson likeablePersonToInstaUserAbcd = likeablePersonService.like(memberUser3, "insta_user_abcd", 2).getData();
 
                 likeablePersonService.like(memberUser2, "insta_user4", 3);
                 likeablePersonService.like(memberUser5, "insta_user4", 2);
@@ -99,7 +101,6 @@ public class NotProd {
                 likeablePersonService.like(memberUser2, "insta_user10", 1);
                 likeablePersonService.like(memberUser1, "insta_user9", 3);
                 likeablePersonService.like(memberUser3, "insta_user9", 2);
-                LikeablePerson likeablePersonToInstaUserAbcd = likeablePersonService.like(memberUser3, "insta_user_abcd", 2).getData();
             }
         };
     }

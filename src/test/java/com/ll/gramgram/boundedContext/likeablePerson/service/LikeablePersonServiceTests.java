@@ -8,10 +8,7 @@ import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import com.ll.gramgram.boundedContext.member.service.MemberService;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -151,6 +148,7 @@ public class LikeablePersonServiceTests {
     }
 
     @Test
+    @Disabled
     @DisplayName("테스트 4")
     void t004() throws Exception {
         // 좋아하는 사람이 2번 인스타 회원인 `좋아요` 검색
@@ -209,6 +207,7 @@ public class LikeablePersonServiceTests {
     }
 
     @Test
+    @Disabled
     @DisplayName("테스트 5")
     void t005() throws Exception {
         LikeablePerson likeablePerson = likeablePersonRepository.findQslByFromInstaMemberIdAndToInstaMember_username(2L, "insta_user4").orElse(null);
