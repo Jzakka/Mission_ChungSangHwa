@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/usr/likeablePerson")
@@ -122,13 +123,16 @@ public class LikeablePersonController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/toList")
-    public String showToList(Model model) {
+    public String showToList(Model model,
+                             @RequestParam Optional<String> gender,
+                             @RequestParam Optional<Integer> attractiveTypeCode,
+                             @RequestParam Optional<Integer> sortCode) {
         InstaMember instaMember = rq.getMember().getInstaMember();
 
         // 인스타인증을 했는지 체크
         if (instaMember != null) {
-            // 해당 인스타회원이 좋아하는 사람들 목록
-            List<LikeablePerson> likeablePeople = instaMember.getToLikeablePeople();
+            // 나 좋아하는 사람들
+            List<LikeablePerson> likeablePeople = instaMember.getToLikeablePeople(gender, attractiveTypeCode, sortCode);
             model.addAttribute("likeablePeople", likeablePeople);
         }
 

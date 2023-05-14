@@ -44,7 +44,7 @@ public class LikeablePersonControllerTests {
 
     @Test
     @DisplayName("등록 폼(인스타 인증을 안해서 폼 대신 메세지)")
-    @WithUserDetails("user1")
+    @WithUserDetails("user11")
     void t001() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
@@ -278,7 +278,7 @@ public class LikeablePersonControllerTests {
 
     @Test
     @DisplayName("인스타아이디가 없는 회원은 대해서 호감표시를 할 수 없다.")
-    @WithUserDetails("user1")
+    @WithUserDetails("user11")
     void t009() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
